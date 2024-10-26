@@ -79,42 +79,43 @@ class DatabaseHelper {
     };
 
     cards.add({
+      DatabaseHelper.cardName: "Oatmeal", // Use 'name' or cardName constant
+      DatabaseHelper.cardSuit: "Breakfast",
+      DatabaseHelper.cardImageUrl: "assets/images/oatmeal.jpg",
+      DatabaseHelper.cardFolderId: folderIds["Breakfast"],
+    });
+    cards.add({
+      DatabaseHelper.cardName: "Pancakes", // Use 'name' or cardName constant
+      DatabaseHelper.cardSuit: "Breakfast",
+      DatabaseHelper.cardImageUrl: "assets/images/Hearts/pancakes.jpg",
+      DatabaseHelper.cardFolderId: folderIds["Breakfast"],
+    });
+    cards.add({
       DatabaseHelper.cardName:
-          "Ace of Hearts", // Use 'name' or cardName constant
-      DatabaseHelper.cardSuit: "Hearts",
-      DatabaseHelper.cardImageUrl: "assets/images/Hearts/htile000.png",
-      DatabaseHelper.cardFolderId: folderIds["Breakfast"],
-    });
-    cards.add({
-      DatabaseHelper.cardName: "2 of Hearts", // Use 'name' or cardName constant
-      DatabaseHelper.cardSuit: "Hearts",
-      DatabaseHelper.cardImageUrl: "assets/images/Hearts/htile001.png",
-      DatabaseHelper.cardFolderId: folderIds["Breakfast"],
-    });
-    cards.add({
-      DatabaseHelper.cardName: "3 of Hearts", // Use 'name' or cardName constant
-      DatabaseHelper.cardSuit: "Hearts",
-      DatabaseHelper.cardImageUrl: "assets/images/Hearts/htile002.png",
+          "Chicken Salad", // Use 'name' or cardName constant
+      DatabaseHelper.cardSuit: "Lunch",
+      DatabaseHelper.cardImageUrl: "assets/images/chickensalad.jpg",
       DatabaseHelper.cardFolderId: folderIds["Lunch"],
     });
     // Spades
     cards.add({
       DatabaseHelper.cardName:
-          "Ace of Spades", // Use 'name' or cardName constant
-      DatabaseHelper.cardSuit: "Spades",
-      DatabaseHelper.cardImageUrl: "assets/images/Spades/Stile000.png",
+          "Egg Salad Sandwich", // Use 'name' or cardName constant
+      DatabaseHelper.cardSuit: "Lunch",
+      DatabaseHelper.cardImageUrl: "assets/images/eggsalad.jpg",
       DatabaseHelper.cardFolderId: folderIds["Lunch"],
     });
     cards.add({
-      DatabaseHelper.cardName: "2 of Spades", // Use 'name' or cardName constant
-      DatabaseHelper.cardSuit: "Spades",
-      DatabaseHelper.cardImageUrl: "assets/images/Spades/Stile001.png",
+      DatabaseHelper.cardName:
+          "Chicken Parmesan", // Use 'name' or cardName constant
+      DatabaseHelper.cardSuit: "Dinner",
+      DatabaseHelper.cardImageUrl: "assets/images/chicken_parmesan.jpg",
       DatabaseHelper.cardFolderId: folderIds["Dinner"],
     });
     cards.add({
-      DatabaseHelper.cardName: "3 of Spades", // Use 'name' or cardName constant
-      DatabaseHelper.cardSuit: "Spades",
-      DatabaseHelper.cardImageUrl: "assets/images/Spades/Stile002.png",
+      DatabaseHelper.cardName: "Meatloaf", // Use 'name' or cardName constant
+      DatabaseHelper.cardSuit: "Dinner",
+      DatabaseHelper.cardImageUrl: "assets/images/meatloaf.jpg",
       DatabaseHelper.cardFolderId: folderIds["Dinner"],
     });
 

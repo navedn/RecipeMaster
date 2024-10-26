@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
-import 'CardsScreen.dart'; // Make sure to import your CardsScreen
-import 'shopping_list_screen.dart'; // Import your ShoppingListScreen
-import 'planner_screen.dart'; // Import your PlannerScreen
+import 'CardsScreen.dart';
+import 'shopping_list_screen.dart';
+import 'planner_screen.dart';
 
 class FoldersScreen extends StatefulWidget {
   final DatabaseHelper dbHelper;

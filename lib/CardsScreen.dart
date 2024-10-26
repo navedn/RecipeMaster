@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
+import 'RecipeInformationScreen.dart';
 
 class CardsScreen extends StatefulWidget {
   final int folderID;
@@ -263,6 +264,14 @@ class _CardsScreenState extends State<CardsScreen> {
                       ),
                     ],
                   ),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            RecipeInformationScreen(card: card),
+                      ),
+                    );
+                  },
                 );
               },
             );
