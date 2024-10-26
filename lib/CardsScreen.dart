@@ -41,6 +41,18 @@ class _CardsScreenState extends State<CardsScreen> {
     TextEditingController nameController =
         TextEditingController(text: card[DatabaseHelper.cardName]);
 
+    TextEditingController prepTimeController = TextEditingController(
+        text: card[DatabaseHelper.cardPrepTime]?.toString() ?? '');
+
+    TextEditingController cookTimeController = TextEditingController(
+        text: card[DatabaseHelper.cardCookTime]?.toString() ?? '');
+
+    TextEditingController ingredientsController =
+        TextEditingController(text: card[DatabaseHelper.cardIngredients]);
+
+    TextEditingController instructionsController =
+        TextEditingController(text: card[DatabaseHelper.cardInstructions]);
+
     int? selectedFolderId = card[DatabaseHelper.cardFolderId];
 
     Future<List<Map<String, dynamic>>> _foldersFuture =
@@ -59,6 +71,32 @@ class _CardsScreenState extends State<CardsScreen> {
                   TextField(
                     controller: nameController,
                     decoration: InputDecoration(labelText: "New Recipe Name"),
+                  ),
+                  TextField(
+                    controller: prepTimeController,
+                    decoration:
+                        InputDecoration(labelText: "Preparation Time (min)"),
+                    keyboardType: TextInputType.number,
+                  ),
+                  TextField(
+                    controller: cookTimeController,
+                    decoration:
+                        InputDecoration(labelText: "Cooking Time (min)"),
+                    keyboardType: TextInputType.number,
+                  ),
+                  TextField(
+                    controller: ingredientsController,
+                    decoration: InputDecoration(labelText: "Ingredients"),
+                    maxLines:
+                        3, // Increase the number of lines for a taller input
+                    keyboardType: TextInputType.multiline,
+                  ),
+                  TextField(
+                    controller: instructionsController,
+                    decoration: InputDecoration(labelText: "Instructions"),
+                    maxLines:
+                        5, // Increase the number of lines for a taller input
+                    keyboardType: TextInputType.multiline,
                   ),
                   FutureBuilder<List<Map<String, dynamic>>>(
                     future: _foldersFuture,
@@ -104,6 +142,13 @@ class _CardsScreenState extends State<CardsScreen> {
                 await widget.dbHelper.renameCard(
                   card[DatabaseHelper.cardId],
                   nameController.text,
+                );
+                await widget.dbHelper.updateCardDetails(
+                  card[DatabaseHelper.cardId],
+                  int.tryParse(prepTimeController.text) ?? 0,
+                  int.tryParse(cookTimeController.text) ?? 0,
+                  ingredientsController.text,
+                  instructionsController.text,
                 );
                 if (selectedFolderId != card[DatabaseHelper.cardFolderId]) {
                   await widget.dbHelper.moveCardToDifferentFolder(

@@ -239,6 +239,21 @@ class DatabaseHelper {
     );
   }
 
+  Future<void> updateCardDetails(int cardId, int prepTime, int cookTime,
+      String ingredients, String instructions) async {
+    await _db.update(
+      cardsTable,
+      {
+        DatabaseHelper.cardPrepTime: prepTime,
+        DatabaseHelper.cardCookTime: cookTime,
+        DatabaseHelper.cardIngredients: ingredients,
+        DatabaseHelper.cardInstructions: instructions,
+      },
+      where: '${DatabaseHelper.cardId} = ?',
+      whereArgs: [cardId],
+    );
+  }
+
   Future<int> renameCard(int id, String newName) async {
     Map<String, dynamic> updates = {
       cardName: newName,
