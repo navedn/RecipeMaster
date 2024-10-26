@@ -367,15 +367,29 @@ class DatabaseHelper {
     }
   }
 
-  Future<void> addCardToFolder(String cardName, String cardImageUrl,
-      int folderId, String cardSuit) async {
+  Future<void> addCardToFolder(
+    String cardName,
+    String cardImageUrl,
+    int folderId,
+    String cardSuit,
+    int prepTime,
+    int cookTime,
+    String ingredients,
+    String instructions,
+  ) async {
+    // Create a map for the card data with new attributes
     final Map<String, dynamic> cardData = {
       DatabaseHelper.cardName: cardName,
       DatabaseHelper.cardImageUrl: cardImageUrl,
       DatabaseHelper.cardSuit: cardSuit,
       DatabaseHelper.cardFolderId: folderId,
+      DatabaseHelper.cardPrepTime: prepTime, // New attribute
+      DatabaseHelper.cardCookTime: cookTime, // New attribute
+      DatabaseHelper.cardIngredients: ingredients, // New attribute
+      DatabaseHelper.cardInstructions: instructions, // New attribute
     };
 
+    // Insert the card data into the cardsTable
     await _db.insert(cardsTable, cardData);
   }
 

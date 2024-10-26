@@ -171,6 +171,12 @@ class _CardsScreenState extends State<CardsScreen> {
     TextEditingController nameController = TextEditingController();
     TextEditingController imageUrlController = TextEditingController();
 
+    // New functionality
+    TextEditingController prepTimeController = TextEditingController();
+    TextEditingController cookTimeController = TextEditingController();
+    TextEditingController ingredientsController = TextEditingController();
+    TextEditingController instructionsController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -182,6 +188,29 @@ class _CardsScreenState extends State<CardsScreen> {
               TextField(
                 controller: nameController,
                 decoration: InputDecoration(labelText: "Recipe Name"),
+              ),
+              TextField(
+                controller: prepTimeController,
+                decoration:
+                    InputDecoration(labelText: "Preparation Time (min)"),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: cookTimeController,
+                decoration: InputDecoration(labelText: "Cooking Time (min)"),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: ingredientsController,
+                decoration: InputDecoration(labelText: "Ingredients"),
+                maxLines: 3,
+                keyboardType: TextInputType.multiline,
+              ),
+              TextField(
+                controller: instructionsController,
+                decoration: InputDecoration(labelText: "Instructions"),
+                maxLines: 5,
+                keyboardType: TextInputType.multiline,
               ),
               TextField(
                 controller: imageUrlController,
@@ -200,15 +229,21 @@ class _CardsScreenState extends State<CardsScreen> {
               onPressed: () async {
                 String cardName = nameController.text;
                 String cardImageUrl = imageUrlController.text;
-                String cardSuit =
-                    widget.folderName; // Set cardSuit as folder name
+                int prepTime = int.tryParse(prepTimeController.text) ?? 0;
+                int cookTime = int.tryParse(cookTimeController.text) ?? 0;
+                String ingredients = ingredientsController.text;
+                String instructions = instructionsController.text;
 
-                // Add the card to the folder
+                // Add the card to the folder with all details
                 await widget.dbHelper.addCardToFolder(
                   cardName,
                   cardImageUrl,
                   widget.folderID,
-                  cardSuit,
+                  widget.folderName, // Set cardSuit as folder name
+                  prepTime,
+                  cookTime,
+                  ingredients,
+                  instructions,
                 );
 
                 _refreshUI(); // Refresh the UI after adding the card
