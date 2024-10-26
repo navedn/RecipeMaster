@@ -19,12 +19,17 @@ class DatabaseHelper {
   static const cardSuit = 'suit';
   static const cardImageUrl = 'image_url';
   static const cardFolderId = 'folder_id';
-
   static const cardIngredients = 'ingredients'; // Ingredients list
   static const cardServingSize = 'serving_size'; // Serving size
   static const cardInstructions = 'instructions'; // Recipe instructions
   static const cardPrepTime = 'prep_time'; // Preparation time in minutes
   static const cardCookTime = 'cook_time'; // Cooking time in minutes
+
+  // GroceryList table
+  static const groceryListTable = 'grocery_list';
+  static const groceryItemId = '_id';
+  static const groceryItemName = 'item_name';
+  static const groceryItemChecked = 'checked';
 
   late Database _db;
 
@@ -62,6 +67,15 @@ class DatabaseHelper {
       FOREIGN KEY ($cardFolderId) REFERENCES $folderTable ($folderId)
     )
     ''');
+
+    // GroceryList table
+    await db.execute('''
+    CREATE TABLE $groceryListTable (
+      $groceryItemId INTEGER PRIMARY KEY,
+      $groceryItemName TEXT NOT NULL,
+      $groceryItemChecked INTEGER NOT NULL DEFAULT 0
+    )
+  ''');
 
     await _insertInitialFolders(db);
     await _insertInitialCards(db);
@@ -409,5 +423,50 @@ class DatabaseHelper {
         'SELECT $cardImageUrl FROM $cardsTable WHERE $cardFolderId = ? LIMIT 1',
         [folderId]);
     return result.isNotEmpty ? result.first[cardImageUrl] as String? : null;
+  }
+
+  Future<int> insertGroceryItem(String itemName) async {
+    Map<String, dynamic> row = {
+      groceryItemName: itemName,
+      groceryItemChecked: 0, // Initially unchecked
+    };
+    return await _db.insert(groceryListTable, row);
+  }
+
+  Future<int> updateGroceryItem(int id, int checked) async {
+    Map<String, dynamic> row = {
+      groceryItemChecked: checked,
+    };
+    return await _db.update(
+      groceryListTable,
+      row,
+      where: '$groceryItemId = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<int> deleteGroceryItem(int id) async {
+    return await _db.delete(
+      groceryListTable,
+      where: '$groceryItemId = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> getGroceryListItems() async {
+    final db = await _db;
+    return await db.query(
+      groceryListTable,
+    );
+  }
+
+  Future<void> updateGroceryItemChecked(int itemId, bool isChecked) async {
+    final db = await _db;
+    await db.update(
+      groceryListTable,
+      {groceryItemChecked: isChecked ? 1 : 0},
+      where: '$groceryItemId = ?',
+      whereArgs: [itemId],
+    );
   }
 }

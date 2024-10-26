@@ -365,8 +365,8 @@ class _CardsScreenState extends State<CardsScreen> {
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) =>
-                            RecipeInformationScreen(card: card),
+                        builder: (context) => RecipeInformationScreen(
+                            card: card, dbHelper: widget.dbHelper),
                       ),
                     );
                   },

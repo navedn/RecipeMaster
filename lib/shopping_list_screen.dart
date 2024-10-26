@@ -1,56 +1,57 @@
 import 'package:flutter/material.dart';
+import 'database_helper.dart';
 
 class ShoppingListScreen extends StatefulWidget {
+  final DatabaseHelper dbHelper;
+
+  ShoppingListScreen({required this.dbHelper, Key? key}) : super(key: key);
+
   @override
   _ShoppingListScreenState createState() => _ShoppingListScreenState();
 }
 
 class _ShoppingListScreenState extends State<ShoppingListScreen> {
-  List<Map<String, dynamic>> shoppingList = [];
+  List<Map<String, dynamic>> groceryList = [];
+
+  // Track the checked state locally
+  List<bool> checkedState = [];
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final args = ModalRoute.of(context)!.settings.arguments;
-
-    shoppingList = args != null ? List<Map<String, dynamic>>.from(args as List<Map<String, dynamic>>) : [];
+  void initState() {
+    super.initState();
+    _loadGroceryList();
   }
 
-  void addNewShoppingItem() {
+  Future<void> _loadGroceryList() async {
+    // Use the passed dbHelper instance
+    List<Map<String, dynamic>> items =
+        await widget.dbHelper.getGroceryListItems();
     setState(() {
-      shoppingList.add({
-        'entreeName': '',
-        'ingredients': [],
-      });
+      groceryList = items;
+      // Initialize checkedState based on the grocery list
+      checkedState = items
+          .map((item) => item['checked'] == 1)
+          .toList(); // Update based on DB
     });
   }
 
-  void addIngredient(int index) {
-    setState(() {
-      shoppingList[index]['ingredients'].add({
-        'name': '',
-        'checked': false,
-      });
-    });
+  Future<void> _deleteGroceryItem(int id) async {
+    await widget.dbHelper.deleteGroceryItem(id);
+    _loadGroceryList(); // Refresh the grocery list after deletion
   }
 
-  void toggleChecked(int entreeIndex, int ingredientIndex) {
+  Future<void> _toggleItemChecked(int index) async {
+    // Toggle the checked state
+    final currentChecked = checkedState[index];
     setState(() {
-      shoppingList[entreeIndex]['ingredients'][ingredientIndex]['checked'] =
-          !shoppingList[entreeIndex]['ingredients'][ingredientIndex]['checked'];
+      checkedState[index] = !currentChecked; // Update local state
     });
-  }
 
-  void removeIngredient(int entreeIndex, int ingredientIndex) {
-    setState(() {
-      shoppingList[entreeIndex]['ingredients'].removeAt(ingredientIndex);
-    });
-  }
-
-  void removeShoppingItem(int index) {
-    setState(() {
-      shoppingList.removeAt(index);
-    });
+    // Update the database
+    await widget.dbHelper.updateGroceryItemChecked(
+      groceryList[index]['_id'],
+      !currentChecked,
+    );
   }
 
   @override
@@ -59,66 +60,36 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       appBar: AppBar(
         title: Text('Shopping List'),
       ),
-      body: ListView.builder(
-        itemCount: shoppingList.length,
-        itemBuilder: (context, index) {
-          return Card(
-            child: Column(
-              children: [
-                TextField(
-                  onChanged: (value) {
-                    shoppingList[index]['entreeName'] = value;
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Entree Name',
-                  ),
-                ),
-                Column(
-                  children: List.generate(
-                    shoppingList[index]['ingredients'].length,
-                    (ingredientIndex) {
-                      return ListTile(
-                        leading: Checkbox(
-                          value: shoppingList[index]['ingredients'][ingredientIndex]['checked'] ?? false,
-                          onChanged: (value) {
-                            toggleChecked(index, ingredientIndex);
-                          },
-                        ),
-                        title: TextField(
-                          onChanged: (value) {
-                            shoppingList[index]['ingredients'][ingredientIndex]['name'] = value;
-                          },
-                          decoration: InputDecoration(
-                            labelText: 'Ingredient',
-                          ),
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () {
-                            removeIngredient(index, ingredientIndex);
-                          },
-                        ),
-                      );
+      body: groceryList.isEmpty
+          ? Center(child: Text('No items in your grocery list.'))
+          : ListView.builder(
+              itemCount: groceryList.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: Checkbox(
+                    value: checkedState[index], // Bind checkbox to local state
+                    onChanged: (value) {
+                      _toggleItemChecked(index); // Toggle checked state
                     },
                   ),
-                ),
-                TextButton(
-                  onPressed: () => addIngredient(index),
-                  child: Text('Add Ingredient'),
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () => removeShoppingItem(index),
-                ),
-              ],
+                  title: Text(
+                    groceryList[index]['item_name'],
+                    style: TextStyle(
+                      decoration: checkedState[index]
+                          ? TextDecoration
+                              .lineThrough // Add strikethrough if checked
+                          : TextDecoration.none,
+                    ),
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      _deleteGroceryItem(groceryList[index]['_id']);
+                    },
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: addNewShoppingItem,
-        child: Icon(Icons.add),
-      ),
     );
   }
 }

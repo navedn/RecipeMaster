@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'database_helper.dart';
 
 class RecipeInformationScreen extends StatelessWidget {
+  final DatabaseHelper dbHelper;
+
   final Map<String, dynamic> card;
 
-  RecipeInformationScreen({required this.card});
+  RecipeInformationScreen({required this.card, required this.dbHelper});
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +26,7 @@ class RecipeInformationScreen extends StatelessWidget {
               width: double.infinity,
               height: 250,
               child: Image.asset(
-                card['image_url'] ??
-                    '', // Ensure there is a fallback if the key is not found
+                card['image_url'] ?? '',
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Icon(Icons.image, size: 50); // Fallback icon
@@ -89,12 +91,32 @@ class RecipeInformationScreen extends StatelessWidget {
       shrinkWrap: true, // Allow the ListView to take only the needed height
       itemCount: ingredientList.length,
       itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
-          child: Text(
-            '- ${ingredientList[index]}', // Format each ingredient
-            style: TextStyle(fontSize: 18),
-          ),
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Text(
+                  '- ${ingredientList[index]}',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.add, color: Colors.green),
+              onPressed: () async {
+                await dbHelper.insertGroceryItem(ingredientList[index]);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content:
+                        Text('${ingredientList[index]} added to Grocery List'),
+                  ),
+                );
+              },
+            ),
+          ],
         );
       },
     );
