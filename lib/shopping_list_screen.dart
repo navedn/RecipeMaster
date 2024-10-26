@@ -40,6 +40,20 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     _loadGroceryList(); // Refresh the grocery list after deletion
   }
 
+  void _addGroceryItem(String itemName) async {
+    if (itemName.isNotEmpty) {
+      await widget.dbHelper.insertGroceryItem(itemName);
+      _loadGroceryList(); // Refresh the UI
+    }
+  }
+
+  void _editGroceryItem(int id, String newName) async {
+    if (newName.isNotEmpty) {
+      await widget.dbHelper.updateGroceryItem(id, newName);
+      _loadGroceryList(); // Refresh the UI
+    }
+  }
+
   Future<void> _toggleItemChecked(int index) async {
     // Toggle the checked state
     final currentChecked = checkedState[index];
@@ -54,11 +68,58 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     );
   }
 
+  // Show dialog for adding or editing grocery item
+  Future<void> _showItemDialog({int? itemId, String? currentName}) async {
+    final TextEditingController controller =
+        TextEditingController(text: currentName);
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(itemId == null ? 'Add Item' : 'Edit Item'),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(labelText: 'Item Name'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text(itemId == null ? 'Add' : 'Save'),
+              onPressed: () {
+                if (itemId == null) {
+                  // Add new item
+                  _addGroceryItem(controller.text);
+                } else {
+                  // Edit existing item
+                  _editGroceryItem(itemId, controller.text);
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Shopping List'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => _showItemDialog(), // Show dialog to add new item
+          ),
+        ],
       ),
       body: groceryList.isEmpty
           ? Center(child: Text('No items in your grocery list.'))
@@ -81,11 +142,25 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                           : TextDecoration.none,
                     ),
                   ),
-                  trailing: IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      _deleteGroceryItem(groceryList[index]['_id']);
-                    },
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () {
+                          _showItemDialog(
+                            itemId: groceryList[index]['_id'],
+                            currentName: groceryList[index]['item_name'],
+                          ); // Show dialog to edit existing item
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.black),
+                        onPressed: () {
+                          _deleteGroceryItem(groceryList[index]['_id']);
+                        },
+                      ),
+                    ],
                   ),
                 );
               },

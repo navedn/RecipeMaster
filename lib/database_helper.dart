@@ -433,13 +433,14 @@ class DatabaseHelper {
     return await _db.insert(groceryListTable, row);
   }
 
-  Future<int> updateGroceryItem(int id, int checked) async {
-    Map<String, dynamic> row = {
-      groceryItemChecked: checked,
+// Update grocery item name
+  Future<int> updateGroceryItem(int id, String newName) async {
+    Map<String, dynamic> updates = {
+      groceryItemName: newName,
     };
     return await _db.update(
       groceryListTable,
-      row,
+      updates,
       where: '$groceryItemId = ?',
       whereArgs: [id],
     );
