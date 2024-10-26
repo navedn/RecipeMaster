@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'database_helper.dart'; // Import your DatabaseHelper
-import 'HomeScreen.dart'; // Import HomeScreen from HomeScreen.dart
+import 'FolderScreen.dart';
 import 'shopping_list_screen.dart';
 import 'planner_screen.dart';
 
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => HomeScreen(dbHelper: dbHelper),
+        '/': (context) => FoldersScreen(dbHelper: dbHelper),
         '/shopping': (context) => ShoppingListScreen(),
         '/planner': (context) => PlannerScreen(),
         '/settings': (context) => Placeholder(),

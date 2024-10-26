@@ -3,23 +3,22 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static const _databaseName = "RecipeBookDatabase.db";
+  static const _databaseName = "CardOrganizerDatabase.db";
   static const _databaseVersion = 1;
 
-  // Category table
-  static const categoryTable = 'categories';
-  static const categoryId = '_id';
-  static const categoryName = 'category_name';
-  static const categoryTimestamp = 'timestamp';
+  // Folder table
+  static const folderTable = 'folders';
+  static const folderId = '_id';
+  static const folderName = 'folder_name';
+  static const folderTimestamp = 'timestamp';
 
-  // Recipes table
-  static const recipesTable = 'recipes';
-  static const recipeId = '_id';
-  static const recipeName = 'name';
-  static const recipeIngredients = 'ingredients';
-  static const recipeInstructions = 'instructions';
-  static const recipeImageUrl = 'image_url';
-  static const recipeCategoryId = 'category_id';
+  // Cards table
+  static const cardsTable = 'cards';
+  static const cardId = '_id';
+  static const cardName = 'name';
+  static const cardSuit = 'suit';
+  static const cardImageUrl = 'image_url';
+  static const cardFolderId = 'folder_id';
 
   late Database _db;
 
@@ -35,149 +34,267 @@ class DatabaseHelper {
 
   Future _onCreate(Database db, int version) async {
     await db.execute('''
-    CREATE TABLE $categoryTable (
-      $categoryId INTEGER PRIMARY KEY,
-      $categoryName TEXT NOT NULL,
-      $categoryTimestamp TEXT NOT NULL
+    CREATE TABLE $folderTable (
+      $folderId INTEGER PRIMARY KEY,
+      $folderName TEXT NOT NULL,
+      $folderTimestamp TEXT NOT NULL
     )
     ''');
 
     await db.execute('''
-    CREATE TABLE $recipesTable (
-      $recipeId INTEGER PRIMARY KEY,
-      $recipeName TEXT NOT NULL,
-      $recipeIngredients TEXT NOT NULL,
-      $recipeInstructions TEXT NOT NULL,
-      $recipeImageUrl TEXT,
-      $recipeCategoryId INTEGER,
-      FOREIGN KEY ($recipeCategoryId) REFERENCES $categoryTable ($categoryId)
+    CREATE TABLE $cardsTable (
+      $cardId INTEGER PRIMARY KEY,
+      $cardName TEXT NOT NULL,
+      $cardSuit TEXT NOT NULL,
+      $cardImageUrl TEXT NOT NULL,
+      $cardFolderId INTEGER,
+      FOREIGN KEY ($cardFolderId) REFERENCES $folderTable ($folderId)
     )
     ''');
 
-    await _insertInitialCategories(db);
+    await _insertInitialFolders(db);
+    await _insertInitialCards(db);
   }
 
-  Future<void> _insertInitialCategories(Database db) async {
-    List<String> initialCategories = ['Breakfast', 'Lunch', 'Dinner'];
+  Future<void> _insertInitialFolders(Database db) async {
+    List<String> folderNames = ['Breakfast', 'Lunch', 'Dinner'];
     String timestamp = DateTime.now().toIso8601String();
 
-    for (String name in initialCategories) {
-      await db.insert(categoryTable, {
-        categoryName: name,
-        categoryTimestamp: timestamp,
+    for (String name in folderNames) {
+      await db.insert(folderTable, {
+        folderName: name,
+        folderTimestamp: timestamp,
       });
     }
   }
 
-  // Insert a new recipe
-  Future<int> insertRecipe(String name, String ingredients, String instructions,
-      String imageUrl, int categoryId) async {
-    Map<String, dynamic> row = {
-      recipeName: name,
-      recipeIngredients: ingredients,
-      recipeInstructions: instructions,
-      recipeImageUrl: imageUrl,
-      recipeCategoryId: categoryId,
+  Future<void> _insertInitialCards(Database db) async {
+    List<Map<String, dynamic>> cards = [];
+
+    List<String> suits = ['Breakfast', 'Lunch', 'Dinner'];
+    Map<String, int> folderIds = {
+      'Breakfast': 1,
+      'Lunch': 2,
+      'Dinner': 3,
     };
-    return await _db.insert(recipesTable, row);
+
+    cards.add({
+      DatabaseHelper.cardName:
+          "Ace of Hearts", // Use 'name' or cardName constant
+      DatabaseHelper.cardSuit: "Hearts",
+      DatabaseHelper.cardImageUrl: "assets/images/Hearts/htile000.png",
+      DatabaseHelper.cardFolderId: folderIds["Breakfast"],
+    });
+    cards.add({
+      DatabaseHelper.cardName: "2 of Hearts", // Use 'name' or cardName constant
+      DatabaseHelper.cardSuit: "Hearts",
+      DatabaseHelper.cardImageUrl: "assets/images/Hearts/htile001.png",
+      DatabaseHelper.cardFolderId: folderIds["Breakfast"],
+    });
+    cards.add({
+      DatabaseHelper.cardName: "3 of Hearts", // Use 'name' or cardName constant
+      DatabaseHelper.cardSuit: "Hearts",
+      DatabaseHelper.cardImageUrl: "assets/images/Hearts/htile002.png",
+      DatabaseHelper.cardFolderId: folderIds["Lunch"],
+    });
+    // Spades
+    cards.add({
+      DatabaseHelper.cardName:
+          "Ace of Spades", // Use 'name' or cardName constant
+      DatabaseHelper.cardSuit: "Spades",
+      DatabaseHelper.cardImageUrl: "assets/images/Spades/Stile000.png",
+      DatabaseHelper.cardFolderId: folderIds["Lunch"],
+    });
+    cards.add({
+      DatabaseHelper.cardName: "2 of Spades", // Use 'name' or cardName constant
+      DatabaseHelper.cardSuit: "Spades",
+      DatabaseHelper.cardImageUrl: "assets/images/Spades/Stile001.png",
+      DatabaseHelper.cardFolderId: folderIds["Dinner"],
+    });
+    cards.add({
+      DatabaseHelper.cardName: "3 of Spades", // Use 'name' or cardName constant
+      DatabaseHelper.cardSuit: "Spades",
+      DatabaseHelper.cardImageUrl: "assets/images/Spades/Stile002.png",
+      DatabaseHelper.cardFolderId: folderIds["Dinner"],
+    });
+
+    for (var card in cards) {
+      await db.insert(cardsTable, card);
+    }
   }
 
-  // Fetch recipes in a category
-  Future<List<Map<String, dynamic>>> getRecipesInCategory(
-      int categoryId) async {
+  // Insert Card
+  Future<int> insertCard(
+      String name, String suit, String imageUrl, int folderId) async {
+    Map<String, dynamic> row = {
+      cardName: name,
+      cardSuit: suit,
+      cardImageUrl: imageUrl,
+      cardFolderId: folderId,
+    };
+    return await _db.insert(cardsTable, row);
+  }
+
+  // Fetch cards in a folder
+  Future<List<Map<String, dynamic>>> getCardsInFolder(int folderId) async {
     return await _db.query(
-      recipesTable,
-      where: '$recipeCategoryId = ?',
-      whereArgs: [categoryId],
+      cardsTable,
+      where: '$cardFolderId = ?',
+      whereArgs: [folderId],
     );
   }
 
-  // Update a recipe
-  Future<int> updateRecipe(int recipeId, String newName, String newIngredients,
-      String newInstructions, String newImageUrl, int newCategoryId) async {
+  // Update card name and folder
+  Future<int> updateCard(int cardId, String newName, int newFolderId) async {
     Map<String, dynamic> row = {
-      recipeName: newName,
-      recipeIngredients: newIngredients,
-      recipeInstructions: newInstructions,
-      recipeImageUrl: newImageUrl,
-      recipeCategoryId: newCategoryId,
+      cardName: newName,
+      cardFolderId: newFolderId,
     };
     return await _db.update(
-      recipesTable,
+      cardsTable,
       row,
-      where: '$recipeId = ?',
-      whereArgs: [recipeId],
+      where: '$cardId = ?',
+      whereArgs: [cardId],
     );
   }
 
-  // Delete a recipe
-  Future<int> deleteRecipe(int id) async {
-    return await _db.delete(
-      recipesTable,
-      where: '$recipeId = ?',
+  Future<int> renameCard(int id, String newName) async {
+    Map<String, dynamic> updates = {
+      cardName: newName,
+    };
+    return await _db.update(
+      cardsTable,
+      updates,
+      where: '$cardId = ?',
       whereArgs: [id],
     );
   }
 
-  // Fetch all categories
-  Future<List<Map<String, dynamic>>> getCategories() async {
-    return await _db.query(categoryTable);
+  // Delete a card
+  Future<int> deleteCard(int id) async {
+    return await _db.delete(
+      cardsTable,
+      where: '$cardId = ?',
+      whereArgs: [id],
+    );
   }
 
-  // Insert a new category
-  Future<int> insertCategory(String name) async {
+  // Fetch all folders
+  Future<List<Map<String, dynamic>>> getFolders() async {
+    return await _db.query(folderTable);
+  }
+
+  Future<int> insertFolder(String name) async {
     final timestamp = DateTime.now().toIso8601String();
     Map<String, dynamic> row = {
-      categoryName: name,
-      categoryTimestamp: timestamp,
+      folderName: name,
+      folderTimestamp: timestamp,
     };
-    return await _db.insert(categoryTable, row);
+    return await _db.insert(folderTable, row);
   }
 
-  // Update category details
-  Future<int> updateCategory(int id, String newName) async {
+  // Update folder details
+  Future<int> updateFolder(int id, String newName) async {
     Map<String, dynamic> row = {
-      categoryName: newName,
-      categoryTimestamp: DateTime.now().toIso8601String(),
+      folderName: newName,
+      folderTimestamp: DateTime.now().toIso8601String(),
     };
     return await _db.update(
-      categoryTable,
+      folderTable,
       row,
-      where: '$categoryId = ?',
+      where: '$folderId = ?',
       whereArgs: [id],
     );
   }
 
-  // Delete category (also deletes all recipes in the category)
-  Future<int> deleteCategory(int id) async {
-    // Delete all recipes in the category
+  // Delete folder (also deletes all cards in the folder)
+  Future<int> deleteFolder(int id) async {
+    // Delete all cards in the folder
     await _db.delete(
-      recipesTable,
-      where: '$recipeCategoryId = ?',
+      cardsTable,
+      where: '$cardFolderId = ?',
       whereArgs: [id],
     );
 
-    // Delete the category itself
+    // Delete the folder itself
     return await _db.delete(
-      categoryTable,
-      where: '$categoryId = ?',
+      folderTable,
+      where: '$folderId = ?',
       whereArgs: [id],
     );
   }
 
-  // Method to get the count of recipes in a category
-  Future<int> getRecipeCountInCategory(int categoryId) async {
+  Future<int> moveToFolder(int cardId, int newFolderId) async {
+    print("Moving card ID $cardId to folder ID $newFolderId");
+    Map<String, dynamic> updates = {
+      cardFolderId:
+          newFolderId, // Assuming cardFolderId is the column for folder IDs
+    };
+    return await _db.update(
+      cardsTable,
+      updates,
+      where: '$cardId = ?',
+      whereArgs: [cardId],
+    );
+  }
+
+  Future<void> moveCardToDifferentFolder(int cardId, int newFolderId) async {
+    // Fetch the original card data using the correct column name
+    final originalCard = await _db.query(
+      cardsTable,
+      where:
+          '${DatabaseHelper.cardId} = ?', // Ensure you are using the column name here
+      whereArgs: [cardId],
+    );
+
+    if (originalCard.isNotEmpty) {
+      // Get original card data with proper type casting
+      final originalCardData = originalCard.first;
+      String cardName =
+          (originalCardData[DatabaseHelper.cardName] as String?) ?? '';
+      String cardSuit =
+          (originalCardData[DatabaseHelper.cardSuit] as String?) ?? '';
+      String cardImageUrl =
+          (originalCardData[DatabaseHelper.cardImageUrl] as String?) ?? '';
+
+      // Debugging: Check the values before deleting
+      print(
+          "Moving card - ID: $cardId, Name: $cardName, Suit: $cardSuit, Image URL: $cardImageUrl");
+
+      // Delete the original card
+      await deleteCard(cardId);
+
+      // Insert a new card into the new folder with the original values
+      await insertCard(cardName, cardSuit, cardImageUrl, newFolderId);
+    } else {
+      print("Card not found");
+    }
+  }
+
+  Future<void> addCardToFolder(String cardName, String cardImageUrl,
+      int folderId, String cardSuit) async {
+    final Map<String, dynamic> cardData = {
+      DatabaseHelper.cardName: cardName,
+      DatabaseHelper.cardImageUrl: cardImageUrl,
+      DatabaseHelper.cardSuit: cardSuit,
+      DatabaseHelper.cardFolderId: folderId,
+    };
+
+    await _db.insert(cardsTable, cardData);
+  }
+
+  // Method to get the count of cards in a folder
+  Future<int> getCardCountInFolder(int folderId) async {
     var result = await _db.rawQuery(
-        'SELECT COUNT(*) FROM $recipesTable WHERE $recipeCategoryId = ?',
-        [categoryId]);
+        'SELECT COUNT(*) FROM $cardsTable WHERE $cardFolderId = ?', [folderId]);
     return Sqflite.firstIntValue(result) ?? 0;
   }
 
-  // Method to get the first recipe image URL in a category
-  Future<String?> getFirstRecipeImageInCategory(int categoryId) async {
+// Method to get the first card image URL in a folder
+  Future<String?> getFirstCardImageInFolder(int folderId) async {
     var result = await _db.rawQuery(
-        'SELECT $recipeImageUrl FROM $recipesTable WHERE $recipeCategoryId = ? LIMIT 1',
-        [categoryId]);
-    return result.isNotEmpty ? result.first[recipeImageUrl] as String? : null;
+        'SELECT $cardImageUrl FROM $cardsTable WHERE $cardFolderId = ? LIMIT 1',
+        [folderId]);
+    return result.isNotEmpty ? result.first[cardImageUrl] as String? : null;
   }
 }
