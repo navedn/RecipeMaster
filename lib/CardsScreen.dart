@@ -47,6 +47,9 @@ class _CardsScreenState extends State<CardsScreen> {
     TextEditingController cookTimeController = TextEditingController(
         text: card[DatabaseHelper.cardCookTime]?.toString() ?? '');
 
+    TextEditingController servingSizeController = TextEditingController(
+        text: card[DatabaseHelper.cardServingSize]?.toString() ?? '');
+
     TextEditingController ingredientsController =
         TextEditingController(text: card[DatabaseHelper.cardIngredients]);
 
@@ -71,6 +74,11 @@ class _CardsScreenState extends State<CardsScreen> {
                   TextField(
                     controller: nameController,
                     decoration: InputDecoration(labelText: "New Recipe Name"),
+                  ),
+                  TextField(
+                    controller: servingSizeController,
+                    decoration: InputDecoration(labelText: "Serving Size"),
+                    keyboardType: TextInputType.number,
                   ),
                   TextField(
                     controller: prepTimeController,
@@ -145,6 +153,7 @@ class _CardsScreenState extends State<CardsScreen> {
                 );
                 await widget.dbHelper.updateCardDetails(
                   card[DatabaseHelper.cardId],
+                  int.tryParse(servingSizeController.text) ?? 0,
                   int.tryParse(prepTimeController.text) ?? 0,
                   int.tryParse(cookTimeController.text) ?? 0,
                   ingredientsController.text,
@@ -176,6 +185,7 @@ class _CardsScreenState extends State<CardsScreen> {
     TextEditingController cookTimeController = TextEditingController();
     TextEditingController ingredientsController = TextEditingController();
     TextEditingController instructionsController = TextEditingController();
+    TextEditingController servingSizeController = TextEditingController();
 
     showDialog(
       context: context,
@@ -188,6 +198,11 @@ class _CardsScreenState extends State<CardsScreen> {
               TextField(
                 controller: nameController,
                 decoration: InputDecoration(labelText: "Recipe Name"),
+              ),
+              TextField(
+                controller: servingSizeController,
+                decoration: InputDecoration(labelText: "Serving Size"),
+                keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: prepTimeController,
@@ -231,6 +246,8 @@ class _CardsScreenState extends State<CardsScreen> {
                 String cardImageUrl = imageUrlController.text;
                 int prepTime = int.tryParse(prepTimeController.text) ?? 0;
                 int cookTime = int.tryParse(cookTimeController.text) ?? 0;
+                int servingSize = int.tryParse(servingSizeController.text) ?? 0;
+
                 String ingredients = ingredientsController.text;
                 String instructions = instructionsController.text;
 
@@ -240,6 +257,7 @@ class _CardsScreenState extends State<CardsScreen> {
                   cardImageUrl,
                   widget.folderID,
                   widget.folderName, // Set cardSuit as folder name
+                  servingSize,
                   prepTime,
                   cookTime,
                   ingredients,

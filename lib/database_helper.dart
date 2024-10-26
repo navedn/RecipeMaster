@@ -55,7 +55,7 @@ class DatabaseHelper {
       $cardImageUrl TEXT NOT NULL,
       $cardFolderId INTEGER,
       $cardIngredients TEXT,  -- New column for ingredients
-      $cardServingSize TEXT,   -- New column for serving size
+      $cardServingSize INTEGER,   -- New column for serving size
       $cardInstructions TEXT,   -- New column for recipe instructions
       $cardPrepTime INTEGER,    -- New column for preparation time
       $cardCookTime INTEGER,    -- New column for cooking time    
@@ -97,7 +97,7 @@ class DatabaseHelper {
       DatabaseHelper.cardFolderId: folderIds["Breakfast"],
       DatabaseHelper.cardIngredients:
           "1 cup oats, 2 cups milk, 1 tablespoon sugar, 1/2 teaspoon cinnamon, 1/4 cup raisins (optional), 1/4 cup chopped nuts (optional)",
-      DatabaseHelper.cardServingSize: "2 servings",
+      DatabaseHelper.cardServingSize: 2,
       DatabaseHelper.cardInstructions: "1. In a saucepan, bring milk to a boil.\n"
           "2. Stir in oats, sugar, and cinnamon.\n"
           "3. Reduce heat to low and simmer for about 5 minutes, stirring occasionally, until thickened.\n"
@@ -114,7 +114,7 @@ class DatabaseHelper {
       DatabaseHelper.cardFolderId: folderIds["Breakfast"],
       DatabaseHelper.cardIngredients:
           "1 cup all-purpose flour, 2 tablespoons sugar, 1 tablespoon baking powder, 1/2 teaspoon salt, 1 cup milk, 1 egg, 2 tablespoons melted butter, maple syrup (for serving)",
-      DatabaseHelper.cardServingSize: "4 servings",
+      DatabaseHelper.cardServingSize: 4,
       DatabaseHelper.cardInstructions:
           "1. In a bowl, whisk together flour, sugar, baking powder, and salt.\n"
               "2. In another bowl, mix milk, egg, and melted butter.\n"
@@ -134,7 +134,7 @@ class DatabaseHelper {
       DatabaseHelper.cardFolderId: folderIds["Lunch"],
       DatabaseHelper.cardIngredients:
           "2 cups cooked chicken, shredded, 1/2 cup mayonnaise, 1 tablespoon Dijon mustard, 1/4 cup chopped celery, 1/4 cup chopped green onions, 1 tablespoon lemon juice, salt and pepper to taste, lettuce leaves (for serving)",
-      DatabaseHelper.cardServingSize: "4 servings",
+      DatabaseHelper.cardServingSize: 4,
       DatabaseHelper.cardInstructions:
           "1. In a large bowl, combine shredded chicken, mayonnaise, mustard, celery, green onions, and lemon juice.\n"
               "2. Mix well and season with salt and pepper.\n"
@@ -152,7 +152,7 @@ class DatabaseHelper {
       DatabaseHelper.cardFolderId: folderIds["Lunch"],
       DatabaseHelper.cardIngredients:
           "4 hard-boiled eggs, chopped, 1/4 cup mayonnaise, 1 teaspoon mustard, 1 tablespoon chopped fresh dill (or parsley), salt and pepper to taste, 4 slices of bread, lettuce leaves (for serving)",
-      DatabaseHelper.cardServingSize: "2 servings",
+      DatabaseHelper.cardServingSize: 2,
       DatabaseHelper.cardInstructions:
           "1. In a bowl, combine chopped eggs, mayonnaise, mustard, and dill. Mix until well combined.\n"
               "2. Season with salt and pepper to taste.\n"
@@ -170,7 +170,7 @@ class DatabaseHelper {
       DatabaseHelper.cardFolderId: folderIds["Dinner"],
       DatabaseHelper.cardIngredients:
           "2 boneless, skinless chicken breasts, 1 cup breadcrumbs, 1/2 cup grated Parmesan cheese, 1 egg, 1 cup marinara sauce, 1 cup shredded mozzarella cheese, salt and pepper to taste, fresh basil (for garnish)",
-      DatabaseHelper.cardServingSize: "2 servings",
+      DatabaseHelper.cardServingSize: 2,
       DatabaseHelper.cardInstructions: "1. Preheat the oven to 375°F (190°C).\n"
           "2. Flatten chicken breasts to an even thickness.\n"
           "3. In a bowl, beat the egg. In another bowl, mix breadcrumbs and Parmesan cheese.\n"
@@ -189,7 +189,7 @@ class DatabaseHelper {
       DatabaseHelper.cardFolderId: folderIds["Dinner"],
       DatabaseHelper.cardIngredients:
           "1 pound ground beef, 1/2 cup breadcrumbs, 1/2 cup milk, 1/2 onion, chopped, 1 egg, 1 teaspoon salt, 1/2 teaspoon pepper, 1/4 cup ketchup (for topping), 1 tablespoon Worcestershire sauce",
-      DatabaseHelper.cardServingSize: "4 servings",
+      DatabaseHelper.cardServingSize: 4,
       DatabaseHelper.cardInstructions: "1. Preheat the oven to 350°F (175°C).\n"
           "2. In a bowl, combine ground beef, breadcrumbs, milk, onion, egg, salt, pepper, and Worcestershire sauce. Mix well.\n"
           "3. Shape the mixture into a loaf and place in a greased baking dish.\n"
@@ -239,13 +239,14 @@ class DatabaseHelper {
     );
   }
 
-  Future<void> updateCardDetails(int cardId, int prepTime, int cookTime,
-      String ingredients, String instructions) async {
+  Future<void> updateCardDetails(int cardId, int servingSize, int prepTime,
+      int cookTime, String ingredients, String instructions) async {
     await _db.update(
       cardsTable,
       {
         DatabaseHelper.cardPrepTime: prepTime,
         DatabaseHelper.cardCookTime: cookTime,
+        DatabaseHelper.cardServingSize: servingSize,
         DatabaseHelper.cardIngredients: ingredients,
         DatabaseHelper.cardInstructions: instructions,
       },
@@ -372,6 +373,7 @@ class DatabaseHelper {
     String cardImageUrl,
     int folderId,
     String cardSuit,
+    int servingSize,
     int prepTime,
     int cookTime,
     String ingredients,
@@ -383,6 +385,7 @@ class DatabaseHelper {
       DatabaseHelper.cardImageUrl: cardImageUrl,
       DatabaseHelper.cardSuit: cardSuit,
       DatabaseHelper.cardFolderId: folderId,
+      DatabaseHelper.cardServingSize: servingSize,
       DatabaseHelper.cardPrepTime: prepTime, // New attribute
       DatabaseHelper.cardCookTime: cookTime, // New attribute
       DatabaseHelper.cardIngredients: ingredients, // New attribute

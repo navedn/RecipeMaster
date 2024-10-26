@@ -34,7 +34,7 @@ class RecipeInformationScreen extends StatelessWidget {
             SizedBox(height: 8),
 
             Text(
-              'Recipe Serving Size: ${card['serving_size'] ?? 'Unknown'}', // Updated key
+              'Recipe Serving Size: ${card['serving_size'] ?? 'Unknown'} servings', // Updated key
               style: TextStyle(fontSize: 18),
             ),
             SizedBox(height: 8),
