@@ -13,38 +13,90 @@ class RecipeInformationScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(card['name'] ?? 'Card Details'), // Updated key
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Card Name: ${card['name'] ?? 'Unknown'}', // Updated key
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            // Recipe Image
+            Container(
+              width: double.infinity,
+              height: 250,
+              child: Image.asset(
+                card['image_url'] ??
+                    '', // Ensure there is a fallback if the key is not found
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(Icons.image, size: 50); // Fallback icon
+                },
+              ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 8),
+
             Text(
-              'Card Suit: ${card['suit'] ?? 'Unknown'}', // Updated key
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Image:',
+              'Recipe Serving Size: ${card['serving_size'] ?? 'Unknown'}', // Updated key
               style: TextStyle(fontSize: 18),
             ),
             SizedBox(height: 8),
-            // Use Image.asset with an error builder
-            Image.asset(
-              card['image_url'] ??
-                  '', // Ensure there is a fallback if the key is not found
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Icon(Icons.image, size: 50); // Fallback icon
-              },
+            Text(
+              'Recipe Prep Time: ${card['prep_time'] ?? 'Unknown'} minutes', // Updated key
+              style: TextStyle(fontSize: 18),
             ),
+            SizedBox(height: 8),
+            Text(
+              'Recipe Cook Time: ${card['cook_time'] ?? 'Unknown'} minutes', // Updated key
+              style: TextStyle(fontSize: 18),
+            ),
+            SizedBox(height: 16),
+
+            Text(
+              'Ingredients:',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+
+            // List of Ingredients
+            _buildIngredientsList(card['ingredients']),
+
+            SizedBox(height: 16),
+
+            Text(
+              'Instructions:',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+
+            Text(
+              card['instructions'] ?? 'Unknown', // Updated key
+              style: TextStyle(fontSize: 18),
+            ),
+            SizedBox(height: 16),
           ],
         ),
       ),
+    );
+  }
+
+  // Function to build the list of ingredients
+  Widget _buildIngredientsList(String ingredients) {
+    // Split the ingredients string by commas to create a list
+    List<String> ingredientList =
+        ingredients.split(',').map((ingredient) => ingredient.trim()).toList();
+
+    return ListView.builder(
+      physics:
+          NeverScrollableScrollPhysics(), // Disable scrolling for inner ListView
+      shrinkWrap: true, // Allow the ListView to take only the needed height
+      itemCount: ingredientList.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Text(
+            '- ${ingredientList[index]}', // Format each ingredient
+            style: TextStyle(fontSize: 18),
+          ),
+        );
+      },
     );
   }
 }

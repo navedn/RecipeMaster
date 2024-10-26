@@ -50,7 +50,7 @@ class _CardsScreenState extends State<CardsScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Edit Card"),
+          title: Text("Edit Recipe"),
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return Column(
@@ -58,7 +58,7 @@ class _CardsScreenState extends State<CardsScreen> {
                 children: [
                   TextField(
                     controller: nameController,
-                    decoration: InputDecoration(labelText: "New Card Name"),
+                    decoration: InputDecoration(labelText: "New Recipe Name"),
                   ),
                   FutureBuilder<List<Map<String, dynamic>>>(
                     future: _foldersFuture,
@@ -130,17 +130,17 @@ class _CardsScreenState extends State<CardsScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Add New Card"),
+          title: Text("Add New Recipe"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: nameController,
-                decoration: InputDecoration(labelText: "Card Name"),
+                decoration: InputDecoration(labelText: "Recipe Name"),
               ),
               TextField(
                 controller: imageUrlController,
-                decoration: InputDecoration(labelText: "Card Image URL"),
+                decoration: InputDecoration(labelText: "Recipe Image Path"),
               ),
             ],
           ),
@@ -182,8 +182,8 @@ class _CardsScreenState extends State<CardsScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Delete Card"),
-          content: Text("Are you sure you want to delete this card?"),
+          title: Text("Delete Recipe"),
+          content: Text("Are you sure you want to delete this recipe?"),
           actions: [
             TextButton(
               onPressed: () {

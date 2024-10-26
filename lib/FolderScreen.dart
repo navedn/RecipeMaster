@@ -220,17 +220,21 @@ class _FoldersScreenState extends State<FoldersScreen> {
                       String? firstCardImageUrl = snapshot.data![1] as String?;
 
                       return ListTile(
-                        leading: firstCardImageUrl != null
-                            ? Image.asset(
-                                firstCardImageUrl,
-                                fit: BoxFit
-                                    .cover, // This will cover the whole container without distorting
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Icon(Icons.image,
-                                      size: 50); // Fallback icon
-                                },
-                              )
-                            : Icon(Icons.image, size: 50),
+                        leading: Container(
+                          width: 40,
+                          height: 200,
+                          child: firstCardImageUrl != null
+                              ? Image.asset(
+                                  firstCardImageUrl,
+                                  fit: BoxFit
+                                      .cover, // This will cover the whole container without distorting
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Icon(Icons.image,
+                                        size: 50); // Fallback icon
+                                  },
+                                )
+                              : Icon(Icons.image, size: 50),
+                        ),
                         title: Text(folder[DatabaseHelper.folderName]),
                         subtitle: Text('$cardCount recipes'),
                         trailing: Row(
