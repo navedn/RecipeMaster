@@ -547,7 +547,27 @@ class DatabaseHelper {
   }
 
   Future<List<Map<String, dynamic>>> getMealPlans() async {
-    return await _db.query(mealPlannerTable);
+    return await _db.rawQuery('''
+    SELECT * FROM $mealPlannerTable 
+    ORDER BY 
+      $mealPlannerDate ASC, 
+      CASE
+        WHEN $mealPlannerTime LIKE '%AM' THEN 
+          strftime('%H:%M', 
+            CASE 
+              WHEN SUBSTR($mealPlannerTime, 1, 2) = '12' THEN '00:' || SUBSTR($mealPlannerTime, 4, 2) 
+              ELSE $mealPlannerTime
+            END)
+        WHEN $mealPlannerTime LIKE '%PM' THEN 
+          strftime('%H:%M', 
+            CASE 
+              WHEN SUBSTR($mealPlannerTime, 1, 2) = '12' THEN $mealPlannerTime
+              ELSE CAST(SUBSTR($mealPlannerTime, 1, 2) AS INTEGER) + 12 || ':' || SUBSTR($mealPlannerTime, 4, 2)
+            END)
+        ELSE 
+          $mealPlannerTime
+      END ASC
+  ''');
   }
 
   Future<String?> getMealNameById(int recipeId) async {
@@ -564,5 +584,14 @@ class DatabaseHelper {
     }
 
     return null; // Return null if no meal was found with the given ID
+  }
+
+  // Method to delete a meal plan by ID
+  Future<int> deleteMealPlan(int mealPlannerId) async {
+    return await _db.delete(
+      mealPlannerTable,
+      where: '$mealPlannerId = ?',
+      whereArgs: [mealPlannerId],
+    );
   }
 }
