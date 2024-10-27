@@ -353,11 +353,17 @@ class _CardsScreenState extends State<CardsScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.edit),
+                        icon: Icon(
+                          Icons.edit,
+                          color: Colors.blue,
+                        ),
                         onPressed: () => _showRenameDialog(card),
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete),
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                        ),
                         onPressed: () => _showDeleteConfirmationDialog(card),
                       ),
                     ],

@@ -134,12 +134,12 @@ class DatabaseHelper {
       DatabaseHelper.cardImageUrl: "assets/images/oatmeal.jpg",
       DatabaseHelper.cardFolderId: folderIds["Breakfast"],
       DatabaseHelper.cardIngredients:
-          "1 cup oats, 2 cups milk, 1 tablespoon sugar, 1/2 teaspoon cinnamon, 1/4 cup raisins (optional), 1/4 cup chopped nuts (optional)",
+          "1/2 cup old fashioned rolled oats, 1 cup milk, pinch of sea salt, 1/4 cup ground cinnamon, 1/4 teaspoon vanilla extract",
       DatabaseHelper.cardServingSize: 2,
-      DatabaseHelper.cardInstructions: "1. In a saucepan, bring milk to a boil.\n"
-          "2. Stir in oats, sugar, and cinnamon.\n"
-          "3. Reduce heat to low and simmer for about 5 minutes, stirring occasionally, until thickened.\n"
-          "4. Remove from heat and let stand for 1-2 minutes. Add raisins and nuts if desired.",
+      DatabaseHelper.cardInstructions:
+          "1. Add oats, water or milk, salt, cinnamon and vanilla (if using) to a pot or saucepan over medium/high heat.\n"
+              "2. Bring mixture to a low boil, reduce heat to a low simmer and continue to cook for about 5-7 minutes; stirring occasionally. Oatmeal is ready when the oats have soaked up most of the liquid and are creamy.\n"
+              "3. Transfer to a bowl and add toppings of choice.",
       DatabaseHelper.cardPrepTime: 5,
       DatabaseHelper.cardCookTime: 10,
     });
@@ -148,18 +148,17 @@ class DatabaseHelper {
     cards.add({
       DatabaseHelper.cardName: "Pancakes", // Use 'name' or cardName constant
       DatabaseHelper.cardSuit: "Breakfast",
-      DatabaseHelper.cardImageUrl: "assets/images/Hearts/pancakes.jpg",
+      DatabaseHelper.cardImageUrl: "assets/images/pancakes.jpg",
       DatabaseHelper.cardFolderId: folderIds["Breakfast"],
       DatabaseHelper.cardIngredients:
-          "1 cup all-purpose flour, 2 tablespoons sugar, 1 tablespoon baking powder, 1/2 teaspoon salt, 1 cup milk, 1 egg, 2 tablespoons melted butter, maple syrup (for serving)",
-      DatabaseHelper.cardServingSize: 4,
+          "1 ½ cups all-purpose flour, 3 ½ teaspoons baking powder, 11 tablespoon white sugar, ¼ teaspoon salt, 1 ¼ cups milk, 1 egg, 3 tablespoons melted butter",
+      DatabaseHelper.cardServingSize: 8,
       DatabaseHelper.cardInstructions:
-          "1. In a bowl, whisk together flour, sugar, baking powder, and salt.\n"
-              "2. In another bowl, mix milk, egg, and melted butter.\n"
-              "3. Pour the wet ingredients into the dry ingredients and stir until just combined (lumps are okay).\n"
-              "4. Heat a skillet over medium heat and grease lightly. Pour 1/4 cup of batter for each pancake and cook until bubbles form on the surface.\n"
-              "5. Flip and cook until golden brown. Serve with maple syrup.",
-      DatabaseHelper.cardPrepTime: 10,
+          "1. Sift flour, baking powder, sugar, and salt together in a large bowl. Make a well in the center and add milk, melted butter, and egg; mix until smooth.\n"
+              "2. Heat a lightly oiled griddle or pan over medium-high heat. \n"
+              "3. Pour or scoop the batter onto the griddle, using approximately 1/4 cup for each pancake; cook until bubbles form and the edges are dry, about 2 to 3 minutes.\n"
+              "4. Flip and cook until browned on the other side. Repeat with remaining batter.\n",
+      DatabaseHelper.cardPrepTime: 5,
       DatabaseHelper.cardCookTime: 15,
     });
 
@@ -171,12 +170,11 @@ class DatabaseHelper {
       DatabaseHelper.cardImageUrl: "assets/images/chickensalad.jpg",
       DatabaseHelper.cardFolderId: folderIds["Lunch"],
       DatabaseHelper.cardIngredients:
-          "2 cups cooked chicken, shredded, 1/2 cup mayonnaise, 1 tablespoon Dijon mustard, 1/4 cup chopped celery, 1/4 cup chopped green onions, 1 tablespoon lemon juice, salt and pepper to taste, lettuce leaves (for serving)",
-      DatabaseHelper.cardServingSize: 4,
+          "12 ounces cooked chicken breast (finely chopped), 1/3 cup light mayonnaise, 1/2 cup celery (chopped), 1/3 cup red onion (diced), 2 tablespoons chicken broth, 1 teaspoon Dijon, 1/2 teaspoon seasoned salt, 1/2 teaspoon pepper",
+      DatabaseHelper.cardServingSize: 6,
       DatabaseHelper.cardInstructions:
-          "1. In a large bowl, combine shredded chicken, mayonnaise, mustard, celery, green onions, and lemon juice.\n"
-              "2. Mix well and season with salt and pepper.\n"
-              "3. Serve on a bed of lettuce or in a sandwich.",
+          "1. Combine all ingredients in a medium bowl and mix well. \n"
+              "2. Mix well and season with salt and pepper.",
       DatabaseHelper.cardPrepTime: 15,
       DatabaseHelper.cardCookTime: 0, // No cooking required
     });
@@ -189,8 +187,8 @@ class DatabaseHelper {
       DatabaseHelper.cardImageUrl: "assets/images/eggsalad.jpg",
       DatabaseHelper.cardFolderId: folderIds["Lunch"],
       DatabaseHelper.cardIngredients:
-          "4 hard-boiled eggs, chopped, 1/4 cup mayonnaise, 1 teaspoon mustard, 1 tablespoon chopped fresh dill (or parsley), salt and pepper to taste, 4 slices of bread, lettuce leaves (for serving)",
-      DatabaseHelper.cardServingSize: 2,
+          "4 hard-boiled eggs, 1/4 cup mayonnaise, 1 teaspoon mustard, 1 tablespoon chopped fresh dill, salt, pepper, 4 slices of bread, lettuce leaves",
+      DatabaseHelper.cardServingSize: 4,
       DatabaseHelper.cardInstructions:
           "1. In a bowl, combine chopped eggs, mayonnaise, mustard, and dill. Mix until well combined.\n"
               "2. Season with salt and pepper to taste.\n"
@@ -207,7 +205,7 @@ class DatabaseHelper {
       DatabaseHelper.cardImageUrl: "assets/images/chicken_parmesan.jpg",
       DatabaseHelper.cardFolderId: folderIds["Dinner"],
       DatabaseHelper.cardIngredients:
-          "2 boneless, skinless chicken breasts, 1 cup breadcrumbs, 1/2 cup grated Parmesan cheese, 1 egg, 1 cup marinara sauce, 1 cup shredded mozzarella cheese, salt and pepper to taste, fresh basil (for garnish)",
+          "2 boneless skinless chicken breasts, 1 cup breadcrumbs, 1/2 cup grated Parmesan cheese, 1 egg, 1 cup marinara sauce, 1 cup shredded mozzarella cheese, salt, peper, fresh basil",
       DatabaseHelper.cardServingSize: 2,
       DatabaseHelper.cardInstructions: "1. Preheat the oven to 375°F (190°C).\n"
           "2. Flatten chicken breasts to an even thickness.\n"
@@ -226,7 +224,7 @@ class DatabaseHelper {
       DatabaseHelper.cardImageUrl: "assets/images/meatloaf.jpg",
       DatabaseHelper.cardFolderId: folderIds["Dinner"],
       DatabaseHelper.cardIngredients:
-          "1 pound ground beef, 1/2 cup breadcrumbs, 1/2 cup milk, 1/2 onion, chopped, 1 egg, 1 teaspoon salt, 1/2 teaspoon pepper, 1/4 cup ketchup (for topping), 1 tablespoon Worcestershire sauce",
+          "1 pound ground beef, 1/2 cup breadcrumbs, 1/2 cup milk, 1/2 onion (chopped), 1 egg, 1 teaspoon salt, 1/2 teaspoon pepper, 1/4 cup ketchup, 1 tablespoon Worcestershire sauce",
       DatabaseHelper.cardServingSize: 4,
       DatabaseHelper.cardInstructions: "1. Preheat the oven to 350°F (175°C).\n"
           "2. In a bowl, combine ground beef, breadcrumbs, milk, onion, egg, salt, pepper, and Worcestershire sauce. Mix well.\n"
@@ -275,16 +273,29 @@ class DatabaseHelper {
     }
   }
 
-  // Insert Card
-  Future<int> insertCard(
-      String name, String suit, String imageUrl, int folderId) async {
-    Map<String, dynamic> row = {
-      cardName: name,
-      cardSuit: suit,
-      cardImageUrl: imageUrl,
-      cardFolderId: folderId,
+  Future<void> insertCard(
+      String name,
+      String suit,
+      String imageUrl,
+      int folderId,
+      String ingredients,
+      int? servingSize,
+      String instructions,
+      int? prepTime,
+      int? cookTime) async {
+    final cardData = {
+      DatabaseHelper.cardName: name,
+      DatabaseHelper.cardSuit: suit,
+      DatabaseHelper.cardImageUrl: imageUrl,
+      DatabaseHelper.cardFolderId: folderId,
+      DatabaseHelper.cardIngredients: ingredients,
+      DatabaseHelper.cardServingSize: servingSize,
+      DatabaseHelper.cardInstructions: instructions,
+      DatabaseHelper.cardPrepTime: prepTime,
+      DatabaseHelper.cardCookTime: cookTime,
     };
-    return await _db.insert(cardsTable, row);
+
+    await _db.insert(cardsTable, cardData);
   }
 
   // Fetch cards in a folder
@@ -424,16 +435,36 @@ class DatabaseHelper {
           (originalCardData[DatabaseHelper.cardSuit] as String?) ?? '';
       String cardImageUrl =
           (originalCardData[DatabaseHelper.cardImageUrl] as String?) ?? '';
+      String cardIngredients =
+          (originalCardData[DatabaseHelper.cardIngredients] as String?) ?? '';
+      int? cardServingSize =
+          (originalCardData[DatabaseHelper.cardServingSize] as int?);
+      String cardInstructions =
+          (originalCardData[DatabaseHelper.cardInstructions] as String?) ?? '';
+      int? cardPrepTime =
+          (originalCardData[DatabaseHelper.cardPrepTime] as int?);
+      int? cardCookTime =
+          (originalCardData[DatabaseHelper.cardCookTime] as int?);
 
       // Debugging: Check the values before deleting
       print(
-          "Moving card - ID: $cardId, Name: $cardName, Suit: $cardSuit, Image URL: $cardImageUrl");
+          "Moving card - ID: $cardId, Name: $cardName, Suit: $cardSuit, Image URL: $cardImageUrl, Ingredients: $cardIngredients, Serving Size: $cardServingSize, Instructions: $cardInstructions, Prep Time: $cardPrepTime, Cook Time: $cardCookTime");
 
       // Delete the original card
       await deleteCard(cardId);
 
       // Insert a new card into the new folder with the original values
-      await insertCard(cardName, cardSuit, cardImageUrl, newFolderId);
+      await insertCard(
+        cardName,
+        cardSuit,
+        cardImageUrl,
+        newFolderId,
+        cardIngredients,
+        cardServingSize,
+        cardInstructions,
+        cardPrepTime,
+        cardCookTime,
+      );
     } else {
       print("Card not found");
     }
@@ -657,5 +688,28 @@ class DatabaseHelper {
       cardsTable,
       columns: [cardId], // Only retrieve the ID
     );
+  }
+
+  Future<void> _clearAllData() async {
+    // Delete all entries from the specified tables
+    await _db.delete(folderTable);
+    await _db.delete(cardsTable);
+    await _db.delete(groceryListTable);
+    await _db.delete(mealPlannerTable);
+  }
+
+  Future<void> clearAllData() async {
+    // Clear all user-entered data in folders, cards, grocery list, and meal planner tables
+    await _clearAllData();
+  }
+
+  Future<void> restoreDefaults() async {
+    // Clear all data in folders, cards, grocery list, and meal planner tables
+    await _clearAllData();
+
+    // Reinsert the initial data
+    await _insertInitialFolders(_db);
+    await _insertInitialCards(_db);
+    await _insertInitialMealPlans(_db);
   }
 }

@@ -3,7 +3,6 @@ import 'package:recipemaster/FolderScreen.dart';
 import 'database_helper.dart';
 import 'shopping_list_screen.dart';
 import 'planner_screen.dart';
-import 'FolderScreen.dart';
 
 class SettingsScreen extends StatefulWidget {
   final DatabaseHelper dbHelper;
@@ -60,9 +59,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       body: Column(
         children: [
+          SizedBox(height: 20),
           Center(
             child: ElevatedButton(
               onPressed: () {
+                widget.dbHelper.restoreDefaults();
+
                 // Implement Reset to Defaults functionality here
                 print('Reset to Defaults pressed');
               },
@@ -72,10 +74,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
+              widget.dbHelper.clearAllData();
+
               // Implement Clear Cache functionality here
-              print('Clear Cache pressed');
+              print('Clear data pressed');
             },
-            child: Text('Clear Cache'),
+            child: Text('Clear Data'),
           ),
         ],
       ),
