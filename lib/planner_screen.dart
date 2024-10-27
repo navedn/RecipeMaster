@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
+import 'FolderScreen.dart';
+import 'shopping_list_screen.dart';
 
 class PlannerScreen extends StatefulWidget {
   final DatabaseHelper dbHelper;
@@ -12,6 +14,7 @@ class PlannerScreen extends StatefulWidget {
 
 class _PlannerScreenState extends State<PlannerScreen> {
   Future<List<Map<String, dynamic>>>? _mealPlans;
+  int _selectedIndex = 2;
 
   @override
   void initState() {
@@ -23,6 +26,42 @@ class _PlannerScreenState extends State<PlannerScreen> {
     setState(() {
       _mealPlans = widget.dbHelper.getMealPlans();
     });
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => FoldersScreen(
+                  dbHelper: widget.dbHelper)), // Replace with your HomeScreen
+        );
+        break;
+      case 1:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  ShoppingListScreen(dbHelper: widget.dbHelper)),
+        );
+        break;
+      case 2:
+        // Already on the Planner screen; no navigation needed
+        break;
+      case 3:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  Placeholder()), // Replace with your Settings screen
+        );
+        break;
+    }
   }
 
   Future<void> _addNewMealPlan() async {
@@ -343,6 +382,20 @@ class _PlannerScreenState extends State<PlannerScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: _addNewMealPlan,
         child: Icon(Icons.add),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Shopping'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today), label: 'Planner'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.settings), label: 'Settings'),
+        ],
+        onTap: _onItemTapped,
       ),
     );
   }
