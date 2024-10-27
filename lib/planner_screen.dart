@@ -325,8 +325,8 @@ class _PlannerScreenState extends State<PlannerScreen> {
                               ),
                               IconButton(
                                 icon: Icon(Icons.delete, color: Colors.red),
-                                onPressed: () =>
-                                    _showDeleteConfirmationDialog(mealId),
+                                onPressed: () => _showDeleteConfirmationDialog(
+                                    mealPlan[DatabaseHelper.mealPlannerId]),
                               ),
                             ],
                           ),
