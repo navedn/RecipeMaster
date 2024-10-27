@@ -169,55 +169,101 @@ class _PlannerScreenState extends State<PlannerScreen> {
     final TextEditingController timeController =
         TextEditingController(text: mealPlan[DatabaseHelper.mealPlannerTime]);
 
+    // Fetch all recipes for the dropdown
+    Future<List<Map<String, dynamic>>> _fetchRecipes() async {
+      final List<Map<String, dynamic>> recipeIds =
+          await widget.dbHelper.getAllRecipeIds();
+      List<Map<String, dynamic>> recipes = [];
+
+      for (var recipe in recipeIds) {
+        final recipeId = recipe[DatabaseHelper.cardId] as int;
+        final recipeName = await widget.dbHelper.getMealNameById(recipeId);
+        if (recipeName != null) {
+          recipes.add({'id': recipeId, 'name': recipeName});
+        }
+      }
+      return recipes;
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Edit Meal Plan"),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: dateController,
-                  decoration: InputDecoration(labelText: 'Date'),
+        int? selectedRecipeId = mealPlan[
+            DatabaseHelper.mealPlannerRecipeId]; // Set the initial value
+        return FutureBuilder<List<Map<String, dynamic>>>(
+          future: _fetchRecipes(), // Fetch recipes asynchronously
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              final recipes = snapshot.data!;
+              return AlertDialog(
+                title: Text("Edit Meal Plan"),
+                content: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: dateController,
+                        decoration: InputDecoration(labelText: 'Date'),
+                      ),
+                      TextField(
+                        controller: mealTypeController,
+                        decoration: InputDecoration(labelText: 'Meal Type'),
+                      ),
+                      TextField(
+                        controller: notesController,
+                        decoration: InputDecoration(labelText: 'Notes'),
+                      ),
+                      TextField(
+                        controller: timeController,
+                        decoration: InputDecoration(labelText: 'Time'),
+                      ),
+                      DropdownButton<int>(
+                        value: selectedRecipeId,
+                        hint: Text('Select a Recipe'),
+                        items: recipes.map<DropdownMenuItem<int>>((recipe) {
+                          return DropdownMenuItem<int>(
+                            value: recipe['id'],
+                            child: Text(recipe['name']),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedRecipeId = value;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                TextField(
-                  controller: mealTypeController,
-                  decoration: InputDecoration(labelText: 'Meal Type'),
-                ),
-                TextField(
-                  controller: notesController,
-                  decoration: InputDecoration(labelText: 'Notes'),
-                ),
-                TextField(
-                  controller: timeController,
-                  decoration: InputDecoration(labelText: 'Time'),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                await widget.dbHelper.updateMealPlan(
-                  mealId,
-                  date: dateController.text,
-                  mealType: mealTypeController.text,
-                  notes: notesController.text,
-                  time: timeController.text,
-                );
-                _fetchMealPlans(); // Refresh the meal plans list
-                Navigator.of(context).pop();
-              },
-              child: Text("Save"),
-            ),
-          ],
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Cancel"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await widget.dbHelper.updateMealPlan(
+                        mealId,
+                        date: dateController.text,
+                        mealType: mealTypeController.text,
+                        recipeId: selectedRecipeId, // Include the new recipe ID
+                        notes: notesController.text,
+                        time: timeController.text,
+                      );
+                      _fetchMealPlans(); // Refresh the meal plans list
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Save"),
+                  ),
+                ],
+              );
+            }
+          },
         );
       },
     );

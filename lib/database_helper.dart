@@ -256,7 +256,7 @@ class DatabaseHelper {
         mealPlannerId: 2,
         mealPlannerDate: '2024-10-28',
         mealPlannerMealType: 'Lunch',
-        mealPlannerRecipeId: 1, // Assuming Chicken Salad recipe has id 3
+        mealPlannerRecipeId: 1, // Should also be oatmeal
         mealPlannerNotes: 'Light and nutritious.',
         mealPlannerTime: '12:30 PM',
       },
