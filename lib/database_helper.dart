@@ -275,16 +275,29 @@ class DatabaseHelper {
     }
   }
 
-  // Insert Card
-  Future<int> insertCard(
-      String name, String suit, String imageUrl, int folderId) async {
-    Map<String, dynamic> row = {
-      cardName: name,
-      cardSuit: suit,
-      cardImageUrl: imageUrl,
-      cardFolderId: folderId,
+  Future<void> insertCard(
+      String name,
+      String suit,
+      String imageUrl,
+      int folderId,
+      String ingredients,
+      int? servingSize,
+      String instructions,
+      int? prepTime,
+      int? cookTime) async {
+    final cardData = {
+      DatabaseHelper.cardName: name,
+      DatabaseHelper.cardSuit: suit,
+      DatabaseHelper.cardImageUrl: imageUrl,
+      DatabaseHelper.cardFolderId: folderId,
+      DatabaseHelper.cardIngredients: ingredients,
+      DatabaseHelper.cardServingSize: servingSize,
+      DatabaseHelper.cardInstructions: instructions,
+      DatabaseHelper.cardPrepTime: prepTime,
+      DatabaseHelper.cardCookTime: cookTime,
     };
-    return await _db.insert(cardsTable, row);
+
+    await _db.insert(cardsTable, cardData);
   }
 
   // Fetch cards in a folder
@@ -424,16 +437,36 @@ class DatabaseHelper {
           (originalCardData[DatabaseHelper.cardSuit] as String?) ?? '';
       String cardImageUrl =
           (originalCardData[DatabaseHelper.cardImageUrl] as String?) ?? '';
+      String cardIngredients =
+          (originalCardData[DatabaseHelper.cardIngredients] as String?) ?? '';
+      int? cardServingSize =
+          (originalCardData[DatabaseHelper.cardServingSize] as int?);
+      String cardInstructions =
+          (originalCardData[DatabaseHelper.cardInstructions] as String?) ?? '';
+      int? cardPrepTime =
+          (originalCardData[DatabaseHelper.cardPrepTime] as int?);
+      int? cardCookTime =
+          (originalCardData[DatabaseHelper.cardCookTime] as int?);
 
       // Debugging: Check the values before deleting
       print(
-          "Moving card - ID: $cardId, Name: $cardName, Suit: $cardSuit, Image URL: $cardImageUrl");
+          "Moving card - ID: $cardId, Name: $cardName, Suit: $cardSuit, Image URL: $cardImageUrl, Ingredients: $cardIngredients, Serving Size: $cardServingSize, Instructions: $cardInstructions, Prep Time: $cardPrepTime, Cook Time: $cardCookTime");
 
       // Delete the original card
       await deleteCard(cardId);
 
       // Insert a new card into the new folder with the original values
-      await insertCard(cardName, cardSuit, cardImageUrl, newFolderId);
+      await insertCard(
+        cardName,
+        cardSuit,
+        cardImageUrl,
+        newFolderId,
+        cardIngredients,
+        cardServingSize,
+        cardInstructions,
+        cardPrepTime,
+        cardCookTime,
+      );
     } else {
       print("Card not found");
     }
@@ -657,5 +690,28 @@ class DatabaseHelper {
       cardsTable,
       columns: [cardId], // Only retrieve the ID
     );
+  }
+
+  Future<void> _clearAllData() async {
+    // Delete all entries from the specified tables
+    await _db.delete(folderTable);
+    await _db.delete(cardsTable);
+    await _db.delete(groceryListTable);
+    await _db.delete(mealPlannerTable);
+  }
+
+  Future<void> clearAllData() async {
+    // Clear all user-entered data in folders, cards, grocery list, and meal planner tables
+    await _clearAllData();
+  }
+
+  Future<void> restoreDefaults() async {
+    // Clear all data in folders, cards, grocery list, and meal planner tables
+    await _clearAllData();
+
+    // Reinsert the initial data
+    await _insertInitialFolders(_db);
+    await _insertInitialCards(_db);
+    await _insertInitialMealPlans(_db);
   }
 }
