@@ -19,12 +19,26 @@ class DatabaseHelper {
   static const cardSuit = 'suit';
   static const cardImageUrl = 'image_url';
   static const cardFolderId = 'folder_id';
-
   static const cardIngredients = 'ingredients'; // Ingredients list
   static const cardServingSize = 'serving_size'; // Serving size
   static const cardInstructions = 'instructions'; // Recipe instructions
   static const cardPrepTime = 'prep_time'; // Preparation time in minutes
   static const cardCookTime = 'cook_time'; // Cooking time in minutes
+
+  // GroceryList table
+  static const groceryListTable = 'grocery_list';
+  static const groceryItemId = '_id';
+  static const groceryItemName = 'item_name';
+  static const groceryItemChecked = 'checked';
+
+  // MealPlanner table
+  static const mealPlannerTable = 'meal_planner';
+  static const mealPlannerId = '_id';
+  static const mealPlannerDate = 'date';
+  static const mealPlannerMealType = 'meal_type';
+  static const mealPlannerRecipeId = 'recipe_id';
+  static const mealPlannerNotes = 'notes';
+  static const mealPlannerTime = 'time';
 
   late Database _db;
 
@@ -63,8 +77,31 @@ class DatabaseHelper {
     )
     ''');
 
+    // GroceryList table
+    await db.execute('''
+    CREATE TABLE $groceryListTable (
+      $groceryItemId INTEGER PRIMARY KEY,
+      $groceryItemName TEXT NOT NULL,
+      $groceryItemChecked INTEGER NOT NULL DEFAULT 0
+    )
+  ''');
+
+    // Create the meal planner table
+    await db.execute('''
+    CREATE TABLE $mealPlannerTable (
+      $mealPlannerId INTEGER PRIMARY KEY,
+      $mealPlannerDate TEXT NOT NULL,
+      $mealPlannerMealType TEXT NOT NULL,
+      $mealPlannerRecipeId INTEGER,
+      $mealPlannerNotes TEXT,
+      $mealPlannerTime TEXT,
+      FOREIGN KEY ($mealPlannerRecipeId) REFERENCES $cardsTable ($cardId)
+    )
+  ''');
+
     await _insertInitialFolders(db);
     await _insertInitialCards(db);
+    await _insertInitialMealPlans(db);
   }
 
   Future<void> _insertInitialFolders(Database db) async {
@@ -201,6 +238,39 @@ class DatabaseHelper {
 
     for (var card in cards) {
       await db.insert(cardsTable, card);
+    }
+  }
+
+  Future<void> _insertInitialMealPlans(Database db) async {
+    List<Map<String, dynamic>> mealPlans = [
+      {
+        mealPlannerId: 1,
+        mealPlannerDate: '2024-10-28',
+        mealPlannerMealType: 'Breakfast',
+        mealPlannerRecipeId: 1, // Assuming the Oatmeal recipe has id 1
+        mealPlannerNotes: 'Start the day healthy!',
+        mealPlannerTime: '08:00 AM',
+      },
+      {
+        mealPlannerId: 2,
+        mealPlannerDate: '2024-10-28',
+        mealPlannerMealType: 'Lunch',
+        mealPlannerRecipeId: 3, // Assuming Chicken Salad recipe has id 3
+        mealPlannerNotes: 'Light and nutritious.',
+        mealPlannerTime: '12:30 PM',
+      },
+      {
+        mealPlannerId: 3,
+        mealPlannerDate: '2024-10-28',
+        mealPlannerMealType: 'Dinner',
+        mealPlannerRecipeId: 5, // Assuming Chicken Parmesan recipe has id 5
+        mealPlannerNotes: 'A classic favorite!',
+        mealPlannerTime: '06:30 PM',
+      },
+    ];
+
+    for (var mealPlan in mealPlans) {
+      await db.insert(mealPlannerTable, mealPlan);
     }
   }
 
@@ -409,5 +479,155 @@ class DatabaseHelper {
         'SELECT $cardImageUrl FROM $cardsTable WHERE $cardFolderId = ? LIMIT 1',
         [folderId]);
     return result.isNotEmpty ? result.first[cardImageUrl] as String? : null;
+  }
+
+  Future<int> insertGroceryItem(String itemName) async {
+    Map<String, dynamic> row = {
+      groceryItemName: itemName,
+      groceryItemChecked: 0, // Initially unchecked
+    };
+    return await _db.insert(groceryListTable, row);
+  }
+
+// Update grocery item name
+  Future<int> updateGroceryItem(int id, String newName) async {
+    Map<String, dynamic> updates = {
+      groceryItemName: newName,
+    };
+    return await _db.update(
+      groceryListTable,
+      updates,
+      where: '$groceryItemId = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<int> deleteGroceryItem(int id) async {
+    return await _db.delete(
+      groceryListTable,
+      where: '$groceryItemId = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> getGroceryListItems() async {
+    final db = await _db;
+    return await db.query(
+      groceryListTable,
+    );
+  }
+
+  Future<void> updateGroceryItemChecked(int itemId, bool isChecked) async {
+    final db = await _db;
+    await db.update(
+      groceryListTable,
+      {groceryItemChecked: isChecked ? 1 : 0},
+      where: '$groceryItemId = ?',
+      whereArgs: [itemId],
+    );
+  }
+
+  // Method to insert a new meal plan into the database
+  Future<int> insertMealPlan({
+    required String date,
+    required String mealType,
+    int? recipeId, // Optional in case no recipe is selected
+    String? notes,
+    String? time,
+  }) async {
+    Map<String, dynamic> row = {
+      mealPlannerDate: date,
+      mealPlannerMealType: mealType,
+      mealPlannerRecipeId: recipeId,
+      mealPlannerNotes: notes,
+      mealPlannerTime: time,
+    };
+
+    // Insert the meal plan into the database and return the new ID
+    return await _db.insert(mealPlannerTable, row);
+  }
+
+// Method to fetch meal plans for a specific date
+  Future<List<Map<String, dynamic>>> getMealPlansByDate(String date) async {
+    return await _db.query(
+      mealPlannerTable,
+      where: '$mealPlannerDate = ?',
+      whereArgs: [date],
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> getMealPlans() async {
+    return await _db.rawQuery('''
+    SELECT * FROM $mealPlannerTable 
+    ORDER BY 
+      $mealPlannerDate ASC, 
+      CASE
+        WHEN $mealPlannerTime LIKE '%AM' THEN 
+          strftime('%H:%M', 
+            CASE 
+              WHEN SUBSTR($mealPlannerTime, 1, 2) = '12' THEN '00:' || SUBSTR($mealPlannerTime, 4, 2) 
+              ELSE $mealPlannerTime
+            END)
+        WHEN $mealPlannerTime LIKE '%PM' THEN 
+          strftime('%H:%M', 
+            CASE 
+              WHEN SUBSTR($mealPlannerTime, 1, 2) = '12' THEN $mealPlannerTime
+              ELSE CAST(SUBSTR($mealPlannerTime, 1, 2) AS INTEGER) + 12 || ':' || SUBSTR($mealPlannerTime, 4, 2)
+            END)
+        ELSE 
+          $mealPlannerTime
+      END ASC
+  ''');
+  }
+
+  Future<String?> getMealNameById(int recipeId) async {
+    final List<Map<String, dynamic>> results = await _db.query(
+      cardsTable,
+      columns: [cardName],
+      where: '$cardId = ?',
+      whereArgs: [recipeId],
+    );
+
+    // Check if any results were returned
+    if (results.isNotEmpty) {
+      return results.first[cardName] as String; // Return the meal name
+    }
+
+    return null; // Return null if no meal was found with the given ID
+  }
+
+  // Method to delete a meal plan by ID
+  Future<int> deleteMealPlan(int id) async {
+    return await _db.delete(
+      mealPlannerTable,
+      where: '$mealPlannerId = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // Method to update a meal plan by ID
+  Future<int> updateMealPlan(
+    int id, {
+    String? date,
+    String? mealType,
+    int? recipeId,
+    String? notes,
+    String? time,
+  }) async {
+    Map<String, dynamic> updatedFields = {};
+
+    // Only add fields to be updated if they are not null
+    if (date != null) updatedFields[mealPlannerDate] = date;
+    if (mealType != null) updatedFields[mealPlannerMealType] = mealType;
+    if (recipeId != null) updatedFields[mealPlannerRecipeId] = recipeId;
+    if (notes != null) updatedFields[mealPlannerNotes] = notes;
+    if (time != null) updatedFields[mealPlannerTime] = time;
+
+    return await _db.update(
+      mealPlannerTable,
+      updatedFields,
+      where: '$mealPlannerId = ?',
+      whereArgs: [id],
+    );
   }
 }
