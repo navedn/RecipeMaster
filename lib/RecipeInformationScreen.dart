@@ -111,7 +111,7 @@ class RecipeInformationScreen extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content:
-                        Text('${ingredientList[index]} added to Grocery List'),
+                        Text('${ingredientList[index]} added to Shopping List'),
                   ),
                 );
               },
