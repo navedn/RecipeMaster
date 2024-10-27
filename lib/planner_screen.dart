@@ -31,56 +31,94 @@ class _PlannerScreenState extends State<PlannerScreen> {
     final TextEditingController notesController = TextEditingController();
     final TextEditingController timeController = TextEditingController();
 
+    final List<Map<String, dynamic>> recipeIds =
+        await widget.dbHelper.getAllRecipeIds();
+    List<Map<String, dynamic>> recipes = [];
+
+    for (var recipe in recipeIds) {
+      final recipeId = recipe[DatabaseHelper.cardId] as int;
+      final recipeName = await widget.dbHelper.getMealNameById(recipeId);
+      if (recipeName != null) {
+        recipes.add({'id': recipeId, 'name': recipeName});
+      }
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Add New Meal Plan"),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: dateController,
-                  decoration: InputDecoration(labelText: 'Date'),
+        int? selectedRecipeId;
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: Text("Add New Meal Plan"),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: dateController,
+                      decoration: InputDecoration(labelText: 'Date'),
+                    ),
+                    TextField(
+                      controller: mealTypeController,
+                      decoration: InputDecoration(labelText: 'Meal Type'),
+                    ),
+                    TextField(
+                      controller: notesController,
+                      decoration: InputDecoration(labelText: 'Notes'),
+                    ),
+                    TextField(
+                      controller: timeController,
+                      decoration: InputDecoration(labelText: 'Time'),
+                    ),
+                    DropdownButton<int>(
+                      value: selectedRecipeId,
+                      hint: Text('Select a Recipe'),
+                      items: recipes.map<DropdownMenuItem<int>>((recipe) {
+                        return DropdownMenuItem<int>(
+                          value: recipe['id'],
+                          child: Text(recipe['name']),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedRecipeId = value;
+                        });
+                      },
+                    ),
+                  ],
                 ),
-                TextField(
-                  controller: mealTypeController,
-                  decoration: InputDecoration(labelText: 'Meal Type'),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text("Cancel"),
                 ),
-                TextField(
-                  controller: notesController,
-                  decoration: InputDecoration(labelText: 'Notes'),
-                ),
-                TextField(
-                  controller: timeController,
-                  decoration: InputDecoration(labelText: 'Time'),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (selectedRecipeId != null) {
+                      debugPrint(
+                          "Adding meal with recipe ID: $selectedRecipeId");
+
+                      await widget.dbHelper.insertMealPlan(
+                        date: dateController.text,
+                        mealType: mealTypeController.text,
+                        notes: notesController.text,
+                        time: timeController.text,
+                        recipeId: selectedRecipeId!,
+                      );
+                      _fetchMealPlans();
+                      Navigator.of(context).pop();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Please select a recipe')),
+                      );
+                    }
+                  },
+                  child: Text("Add Meal"),
                 ),
               ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                // Call the insertMealPlan method to add the new meal
-                await widget.dbHelper.insertMealPlan(
-                  date: dateController.text,
-                  mealType: mealTypeController.text,
-                  notes: notesController.text,
-                  time: timeController.text,
-                );
-
-                _fetchMealPlans(); // Refresh the list of meal plans
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text("Add Meal"),
-            ),
-          ],
+            );
+          },
         );
       },
     );
@@ -205,7 +243,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final mealPlan = snapshot.data![index];
-                final mealId = mealPlan[DatabaseHelper.mealPlannerId];
+                final mealId = mealPlan[DatabaseHelper.mealPlannerRecipeId];
 
                 return FutureBuilder<String?>(
                   future: widget.dbHelper.getMealNameById(mealId),

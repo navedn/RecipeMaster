@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -255,7 +256,7 @@ class DatabaseHelper {
         mealPlannerId: 2,
         mealPlannerDate: '2024-10-28',
         mealPlannerMealType: 'Lunch',
-        mealPlannerRecipeId: 3, // Assuming Chicken Salad recipe has id 3
+        mealPlannerRecipeId: 1, // Assuming Chicken Salad recipe has id 3
         mealPlannerNotes: 'Light and nutritious.',
         mealPlannerTime: '12:30 PM',
       },
@@ -527,24 +528,35 @@ class DatabaseHelper {
     );
   }
 
-  // Method to insert a new meal plan into the database
   Future<int> insertMealPlan({
     required String date,
     required String mealType,
-    int? recipeId, // Optional in case no recipe is selected
+    required int? recipeId, // Make this required if you always want it
     String? notes,
     String? time,
   }) async {
+    // Create a map representing the new row to be inserted
     Map<String, dynamic> row = {
       mealPlannerDate: date,
       mealPlannerMealType: mealType,
-      mealPlannerRecipeId: recipeId,
+      mealPlannerRecipeId: recipeId, // Recipe ID should be set here
       mealPlannerNotes: notes,
       mealPlannerTime: time,
     };
 
-    // Insert the meal plan into the database and return the new ID
-    return await _db.insert(mealPlannerTable, row);
+    // Check if recipeId is valid
+    if (recipeId == null) {
+      debugPrint("Error: recipeId cannot be null.");
+      throw ArgumentError("recipeId cannot be null.");
+    }
+
+    // Insert the row into the database and return the new record ID
+    int id = await _db.insert(mealPlannerTable, row);
+
+    // Debug log for confirmation
+    debugPrint("Inserted meal plan with ID: $id and Recipe ID: $recipeId");
+
+    return recipeId; // Return the newly inserted meal plan ID
   }
 
 // Method to fetch meal plans for a specific date
@@ -628,6 +640,22 @@ class DatabaseHelper {
       updatedFields,
       where: '$mealPlannerId = ?',
       whereArgs: [id],
+    );
+  }
+
+  Future<int> updateMealPlanRecipeId(int mealPlanId, int newRecipeId) async {
+    return await _db.update(
+      mealPlannerTable,
+      {mealPlannerRecipeId: newRecipeId},
+      where: '$mealPlannerId = ?',
+      whereArgs: [mealPlanId],
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> getAllRecipeIds() async {
+    return await _db.query(
+      cardsTable,
+      columns: [cardId], // Only retrieve the ID
     );
   }
 }
