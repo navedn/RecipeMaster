@@ -246,14 +246,14 @@ class _FoldersScreenState extends State<FoldersScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: Icon(Icons.edit),
+                              icon: Icon(Icons.edit, color: Colors.blue),
                               onPressed: () => _updateFolder(
                                 folder[DatabaseHelper.folderId],
                                 folder[DatabaseHelper.folderName],
                               ),
                             ),
                             IconButton(
-                              icon: Icon(Icons.delete),
+                              icon: Icon(Icons.delete, color: Colors.red),
                               onPressed: () => _deleteFolder(
                                 folder[DatabaseHelper.folderId],
                               ),

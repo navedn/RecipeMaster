@@ -195,7 +195,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                         },
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete, color: Colors.black),
+                        icon: Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
                           _deleteGroceryItem(groceryList[index]['_id']);
                         },

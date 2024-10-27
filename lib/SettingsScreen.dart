@@ -3,7 +3,6 @@ import 'package:recipemaster/FolderScreen.dart';
 import 'database_helper.dart';
 import 'shopping_list_screen.dart';
 import 'planner_screen.dart';
-import 'FolderScreen.dart';
 
 class SettingsScreen extends StatefulWidget {
   final DatabaseHelper dbHelper;
@@ -60,6 +59,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       body: Column(
         children: [
+          SizedBox(height: 20),
           Center(
             child: ElevatedButton(
               onPressed: () {
