@@ -510,15 +510,6 @@ class DatabaseHelper {
     );
   }
 
-  // Method to delete a meal plan by ID
-  Future<int> deleteMealPlan(int id) async {
-    return await _db.delete(
-      mealPlannerTable,
-      where: '$mealPlannerId = ?',
-      whereArgs: [id],
-    );
-  }
-
   Future<List<Map<String, dynamic>>> getGroceryListItems() async {
     final db = await _db;
     return await db.query(
@@ -596,5 +587,40 @@ class DatabaseHelper {
     }
 
     return null; // Return null if no meal was found with the given ID
+  }
+
+  // Method to delete a meal plan by ID
+  Future<int> deleteMealPlan(int id) async {
+    return await _db.delete(
+      mealPlannerTable,
+      where: '$mealPlannerId = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // Method to update a meal plan by ID
+  Future<int> updateMealPlan(
+    int id, {
+    String? date,
+    String? mealType,
+    int? recipeId,
+    String? notes,
+    String? time,
+  }) async {
+    Map<String, dynamic> updatedFields = {};
+
+    // Only add fields to be updated if they are not null
+    if (date != null) updatedFields[mealPlannerDate] = date;
+    if (mealType != null) updatedFields[mealPlannerMealType] = mealType;
+    if (recipeId != null) updatedFields[mealPlannerRecipeId] = recipeId;
+    if (notes != null) updatedFields[mealPlannerNotes] = notes;
+    if (time != null) updatedFields[mealPlannerTime] = time;
+
+    return await _db.update(
+      mealPlannerTable,
+      updatedFields,
+      where: '$mealPlannerId = ?',
+      whereArgs: [id],
+    );
   }
 }

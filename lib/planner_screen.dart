@@ -59,6 +59,71 @@ class _PlannerScreenState extends State<PlannerScreen> {
     );
   }
 
+  void _showEditMealPlanDialog(Map<String, dynamic> mealPlan) {
+    final mealId = mealPlan[DatabaseHelper.mealPlannerId];
+    final TextEditingController dateController =
+        TextEditingController(text: mealPlan[DatabaseHelper.mealPlannerDate]);
+    final TextEditingController mealTypeController = TextEditingController(
+        text: mealPlan[DatabaseHelper.mealPlannerMealType]);
+    final TextEditingController notesController =
+        TextEditingController(text: mealPlan[DatabaseHelper.mealPlannerNotes]);
+    final TextEditingController timeController =
+        TextEditingController(text: mealPlan[DatabaseHelper.mealPlannerTime]);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Edit Meal Plan"),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: dateController,
+                  decoration: InputDecoration(labelText: 'Date'),
+                ),
+                TextField(
+                  controller: mealTypeController,
+                  decoration: InputDecoration(labelText: 'Meal Type'),
+                ),
+                TextField(
+                  controller: notesController,
+                  decoration: InputDecoration(labelText: 'Notes'),
+                ),
+                TextField(
+                  controller: timeController,
+                  decoration: InputDecoration(labelText: 'Time'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await widget.dbHelper.updateMealPlan(
+                  mealId,
+                  date: dateController.text,
+                  mealType: mealTypeController.text,
+                  notes: notesController.text,
+                  time: timeController.text,
+                );
+                _fetchMealPlans(); // Refresh the meal plans list
+                Navigator.of(context).pop();
+              },
+              child: Text("Save"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,6 +173,11 @@ class _PlannerScreenState extends State<PlannerScreen> {
                             children: [
                               Text(
                                   '${mealPlan[DatabaseHelper.mealPlannerDate]}'),
+                              IconButton(
+                                icon: Icon(Icons.edit, color: Colors.blue),
+                                onPressed: () =>
+                                    _showEditMealPlanDialog(mealPlan),
+                              ),
                               IconButton(
                                 icon: Icon(Icons.delete, color: Colors.red),
                                 onPressed: () =>
