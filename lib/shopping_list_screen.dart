@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recipemaster/SettingsScreen.dart';
 import 'database_helper.dart';
 import 'CardsScreen.dart'; // Import necessary screens for navigation
 import 'planner_screen.dart'; // Import necessary screens for navigation
@@ -141,7 +142,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       case 3:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Placeholder()),
+          MaterialPageRoute(
+              builder: (context) => SettingsScreen(dbHelper: widget.dbHelper)),
         );
         break;
     }

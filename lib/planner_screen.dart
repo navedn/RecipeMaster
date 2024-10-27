@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:recipemaster/SettingsScreen.dart';
 import 'database_helper.dart';
+import 'FolderScreen.dart';
+import 'shopping_list_screen.dart';
 
 class PlannerScreen extends StatefulWidget {
   final DatabaseHelper dbHelper;
@@ -12,6 +15,7 @@ class PlannerScreen extends StatefulWidget {
 
 class _PlannerScreenState extends State<PlannerScreen> {
   Future<List<Map<String, dynamic>>>? _mealPlans;
+  int _selectedIndex = 2;
 
   @override
   void initState() {
@@ -25,62 +29,137 @@ class _PlannerScreenState extends State<PlannerScreen> {
     });
   }
 
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => FoldersScreen(
+                  dbHelper: widget.dbHelper)), // Replace with your HomeScreen
+        );
+        break;
+      case 1:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  ShoppingListScreen(dbHelper: widget.dbHelper)),
+        );
+        break;
+      case 2:
+        // Already on the Planner screen; no navigation needed
+        break;
+      case 3:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => SettingsScreen(
+                  dbHelper:
+                      widget.dbHelper)), // Replace with your Settings screen
+        );
+        break;
+    }
+  }
+
   Future<void> _addNewMealPlan() async {
     final TextEditingController dateController = TextEditingController();
     final TextEditingController mealTypeController = TextEditingController();
     final TextEditingController notesController = TextEditingController();
     final TextEditingController timeController = TextEditingController();
 
+    final List<Map<String, dynamic>> recipeIds =
+        await widget.dbHelper.getAllRecipeIds();
+    List<Map<String, dynamic>> recipes = [];
+
+    for (var recipe in recipeIds) {
+      final recipeId = recipe[DatabaseHelper.cardId] as int;
+      final recipeName = await widget.dbHelper.getMealNameById(recipeId);
+      if (recipeName != null) {
+        recipes.add({'id': recipeId, 'name': recipeName});
+      }
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Add New Meal Plan"),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: dateController,
-                  decoration: InputDecoration(labelText: 'Date'),
+        int? selectedRecipeId;
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: Text("Add New Meal Plan"),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: dateController,
+                      decoration: InputDecoration(labelText: 'Date'),
+                    ),
+                    TextField(
+                      controller: mealTypeController,
+                      decoration: InputDecoration(labelText: 'Meal Type'),
+                    ),
+                    TextField(
+                      controller: notesController,
+                      decoration: InputDecoration(labelText: 'Notes'),
+                    ),
+                    TextField(
+                      controller: timeController,
+                      decoration: InputDecoration(labelText: 'Time'),
+                    ),
+                    DropdownButton<int>(
+                      value: selectedRecipeId,
+                      hint: Text('Select a Recipe'),
+                      items: recipes.map<DropdownMenuItem<int>>((recipe) {
+                        return DropdownMenuItem<int>(
+                          value: recipe['id'],
+                          child: Text(recipe['name']),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedRecipeId = value;
+                        });
+                      },
+                    ),
+                  ],
                 ),
-                TextField(
-                  controller: mealTypeController,
-                  decoration: InputDecoration(labelText: 'Meal Type'),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text("Cancel"),
                 ),
-                TextField(
-                  controller: notesController,
-                  decoration: InputDecoration(labelText: 'Notes'),
-                ),
-                TextField(
-                  controller: timeController,
-                  decoration: InputDecoration(labelText: 'Time'),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (selectedRecipeId != null) {
+                      debugPrint(
+                          "Adding meal with recipe ID: $selectedRecipeId");
+
+                      await widget.dbHelper.insertMealPlan(
+                        date: dateController.text,
+                        mealType: mealTypeController.text,
+                        notes: notesController.text,
+                        time: timeController.text,
+                        recipeId: selectedRecipeId!,
+                      );
+                      _fetchMealPlans();
+                      Navigator.of(context).pop();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Please select a recipe')),
+                      );
+                    }
+                  },
+                  child: Text("Add Meal"),
                 ),
               ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                // Call the insertMealPlan method to add the new meal
-                await widget.dbHelper.insertMealPlan(
-                  date: dateController.text,
-                  mealType: mealTypeController.text,
-                  notes: notesController.text,
-                  time: timeController.text,
-                );
-
-                _fetchMealPlans(); // Refresh the list of meal plans
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text("Add Meal"),
-            ),
-          ],
+            );
+          },
         );
       },
     );
@@ -131,55 +210,101 @@ class _PlannerScreenState extends State<PlannerScreen> {
     final TextEditingController timeController =
         TextEditingController(text: mealPlan[DatabaseHelper.mealPlannerTime]);
 
+    // Fetch all recipes for the dropdown
+    Future<List<Map<String, dynamic>>> _fetchRecipes() async {
+      final List<Map<String, dynamic>> recipeIds =
+          await widget.dbHelper.getAllRecipeIds();
+      List<Map<String, dynamic>> recipes = [];
+
+      for (var recipe in recipeIds) {
+        final recipeId = recipe[DatabaseHelper.cardId] as int;
+        final recipeName = await widget.dbHelper.getMealNameById(recipeId);
+        if (recipeName != null) {
+          recipes.add({'id': recipeId, 'name': recipeName});
+        }
+      }
+      return recipes;
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Edit Meal Plan"),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: dateController,
-                  decoration: InputDecoration(labelText: 'Date'),
+        int? selectedRecipeId = mealPlan[
+            DatabaseHelper.mealPlannerRecipeId]; // Set the initial value
+        return FutureBuilder<List<Map<String, dynamic>>>(
+          future: _fetchRecipes(), // Fetch recipes asynchronously
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              final recipes = snapshot.data!;
+              return AlertDialog(
+                title: Text("Edit Meal Plan"),
+                content: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: dateController,
+                        decoration: InputDecoration(labelText: 'Date'),
+                      ),
+                      TextField(
+                        controller: mealTypeController,
+                        decoration: InputDecoration(labelText: 'Meal Type'),
+                      ),
+                      TextField(
+                        controller: notesController,
+                        decoration: InputDecoration(labelText: 'Notes'),
+                      ),
+                      TextField(
+                        controller: timeController,
+                        decoration: InputDecoration(labelText: 'Time'),
+                      ),
+                      DropdownButton<int>(
+                        value: selectedRecipeId,
+                        hint: Text('Select a Recipe'),
+                        items: recipes.map<DropdownMenuItem<int>>((recipe) {
+                          return DropdownMenuItem<int>(
+                            value: recipe['id'],
+                            child: Text(recipe['name']),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedRecipeId = value;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                TextField(
-                  controller: mealTypeController,
-                  decoration: InputDecoration(labelText: 'Meal Type'),
-                ),
-                TextField(
-                  controller: notesController,
-                  decoration: InputDecoration(labelText: 'Notes'),
-                ),
-                TextField(
-                  controller: timeController,
-                  decoration: InputDecoration(labelText: 'Time'),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                await widget.dbHelper.updateMealPlan(
-                  mealId,
-                  date: dateController.text,
-                  mealType: mealTypeController.text,
-                  notes: notesController.text,
-                  time: timeController.text,
-                );
-                _fetchMealPlans(); // Refresh the meal plans list
-                Navigator.of(context).pop();
-              },
-              child: Text("Save"),
-            ),
-          ],
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Cancel"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await widget.dbHelper.updateMealPlan(
+                        mealId,
+                        date: dateController.text,
+                        mealType: mealTypeController.text,
+                        recipeId: selectedRecipeId, // Include the new recipe ID
+                        notes: notesController.text,
+                        time: timeController.text,
+                      );
+                      _fetchMealPlans(); // Refresh the meal plans list
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Save"),
+                  ),
+                ],
+              );
+            }
+          },
         );
       },
     );
@@ -205,7 +330,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final mealPlan = snapshot.data![index];
-                final mealId = mealPlan[DatabaseHelper.mealPlannerId];
+                final mealId = mealPlan[DatabaseHelper.mealPlannerRecipeId];
 
                 return FutureBuilder<String?>(
                   future: widget.dbHelper.getMealNameById(mealId),
@@ -241,8 +366,8 @@ class _PlannerScreenState extends State<PlannerScreen> {
                               ),
                               IconButton(
                                 icon: Icon(Icons.delete, color: Colors.red),
-                                onPressed: () =>
-                                    _showDeleteConfirmationDialog(mealId),
+                                onPressed: () => _showDeleteConfirmationDialog(
+                                    mealPlan[DatabaseHelper.mealPlannerId]),
                               ),
                             ],
                           ),
@@ -259,6 +384,20 @@ class _PlannerScreenState extends State<PlannerScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: _addNewMealPlan,
         child: Icon(Icons.add),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Shopping'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today), label: 'Planner'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.settings), label: 'Settings'),
+        ],
+        onTap: _onItemTapped,
       ),
     );
   }
