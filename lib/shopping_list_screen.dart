@@ -134,7 +134,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       case 2:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => PlannerScreen()),
+          MaterialPageRoute(
+              builder: (context) => PlannerScreen(dbHelper: widget.dbHelper)),
         );
         break;
       case 3:

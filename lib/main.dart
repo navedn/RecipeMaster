@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => FoldersScreen(dbHelper: dbHelper),
         '/shopping': (context) => ShoppingListScreen(dbHelper: dbHelper),
-        '/planner': (context) => PlannerScreen(),
+        '/planner': (context) => PlannerScreen(dbHelper: dbHelper),
         '/settings': (context) => Placeholder(),
       },
     );

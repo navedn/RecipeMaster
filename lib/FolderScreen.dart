@@ -159,7 +159,8 @@ class _FoldersScreenState extends State<FoldersScreen> {
       case 2:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => PlannerScreen()),
+          MaterialPageRoute(
+              builder: (context) => PlannerScreen(dbHelper: widget.dbHelper)),
         );
         break;
       case 3:

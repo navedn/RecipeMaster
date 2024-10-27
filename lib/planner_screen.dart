@@ -1,40 +1,29 @@
 import 'package:flutter/material.dart';
+import 'database_helper.dart';
 
 class PlannerScreen extends StatefulWidget {
+  final DatabaseHelper dbHelper; // Add a variable to hold the DatabaseHelper
+
+  // Constructor to accept DatabaseHelper
+  const PlannerScreen({Key? key, required this.dbHelper}) : super(key: key);
+
   @override
   _PlannerScreenState createState() => _PlannerScreenState();
 }
 
 class _PlannerScreenState extends State<PlannerScreen> {
-  List<Map<String, dynamic>> plannerEntries = [];
+  Future<List<Map<String, dynamic>>>? _mealPlans;
 
-  void addNewPlannerEntry() {
-    setState(() {
-      plannerEntries.add({
-        'date': '',
-        'mealPlan': '',
-        'ingredients': [],  
-      });
-    });
+  @override
+  void initState() {
+    super.initState();
+    _fetchMealPlans(); // Fetch meal plans directly using the passed dbHelper
   }
 
-  void generateShoppingList() {
-    List<Map<String, dynamic>> shoppingList = [];
-    for (var entry in plannerEntries) {
-      if (entry['mealPlan'].isNotEmpty) {
-        shoppingList.add({
-          'entreeName': entry['mealPlan'],
-          'ingredients': entry['ingredients'], 
-        });
-      }
-    }
-
-    Navigator.pushNamed(context, '/shopping', arguments: shoppingList);
-  }
-
-  void removePlannerEntry(int index) {
+  void _fetchMealPlans() {
     setState(() {
-      plannerEntries.removeAt(index);
+      _mealPlans =
+          widget.dbHelper.getMealPlans(); // Use the instance from the widget
     });
   }
 
@@ -42,80 +31,60 @@ class _PlannerScreenState extends State<PlannerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Planner'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.list),
-            onPressed: generateShoppingList,
-          ),
-        ],
+        title: Text('Meal Planner'),
       ),
-      body: ListView.builder(
-        itemCount: plannerEntries.length,
-        itemBuilder: (context, index) {
-          return Card(
-            child: Column(
-              children: [
-                TextField(
-                  onChanged: (value) {
-                    plannerEntries[index]['date'] = value;
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Date',
-                  ),
-                ),
-                TextField(
-                  onChanged: (value) {
-                    plannerEntries[index]['mealPlan'] = value;
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Meal Plan',
-                  ),
-                  maxLines: 3,
-                ),
-                Column(
-                  children: List.generate(
-                    plannerEntries[index]['ingredients'].length,
-                    (ingredientIndex) {
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: _mealPlans,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No meal plans available.'));
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final mealPlan = snapshot.data![index];
+                final mealId = mealPlan[DatabaseHelper.mealPlannerId];
+
+                // Using FutureBuilder to fetch meal name
+                return FutureBuilder<String?>(
+                  future: widget.dbHelper
+                      .getMealNameById(mealId), // Call getMealNameById
+                  builder: (context, mealNameSnapshot) {
+                    if (mealNameSnapshot.connectionState ==
+                        ConnectionState.waiting) {
                       return ListTile(
-                        title: TextField(
-                          onChanged: (value) {
-                            plannerEntries[index]['ingredients'][ingredientIndex] = value;
-                          },
-                          decoration: InputDecoration(labelText: 'Ingredient'),
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () {
-                            setState(() {
-                              plannerEntries[index]['ingredients'].removeAt(ingredientIndex);
-                            });
-                          },
+                        title: Text('Loading meal name...'),
+                      );
+                    } else if (mealNameSnapshot.hasError) {
+                      return ListTile(
+                        title: Text('Error: ${mealNameSnapshot.error}'),
+                      );
+                    } else {
+                      final mealName = mealNameSnapshot.data ??
+                          'Unknown Meal'; // Handle null
+
+                      return Card(
+                        margin: EdgeInsets.all(8.0),
+                        child: ListTile(
+                          title: Text(
+                              '${mealPlan[DatabaseHelper.mealPlannerMealType]}: $mealName'),
+                          subtitle: Text(
+                              'Time: ${mealPlan[DatabaseHelper.mealPlannerTime]}'),
+                          trailing: Text(
+                              '${mealPlan[DatabaseHelper.mealPlannerDate]}'),
                         ),
                       );
-                    },
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      plannerEntries[index]['ingredients'].add('');
-                    });
+                    }
                   },
-                  child: Text('Add Ingredient'),
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () => removePlannerEntry(index),
-                ),
-              ],
-            ),
-          );
+                );
+              },
+            );
+          }
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: addNewPlannerEntry,
-        child: Icon(Icons.add),
       ),
     );
   }

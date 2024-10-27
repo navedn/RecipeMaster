@@ -31,6 +31,15 @@ class DatabaseHelper {
   static const groceryItemName = 'item_name';
   static const groceryItemChecked = 'checked';
 
+  // MealPlanner table
+  static const mealPlannerTable = 'meal_planner';
+  static const mealPlannerId = '_id';
+  static const mealPlannerDate = 'date';
+  static const mealPlannerMealType = 'meal_type';
+  static const mealPlannerRecipeId = 'recipe_id';
+  static const mealPlannerNotes = 'notes';
+  static const mealPlannerTime = 'time';
+
   late Database _db;
 
   Future<void> init() async {
@@ -77,8 +86,22 @@ class DatabaseHelper {
     )
   ''');
 
+    // Create the meal planner table
+    await db.execute('''
+    CREATE TABLE $mealPlannerTable (
+      $mealPlannerId INTEGER PRIMARY KEY,
+      $mealPlannerDate TEXT NOT NULL,
+      $mealPlannerMealType TEXT NOT NULL,
+      $mealPlannerRecipeId INTEGER,
+      $mealPlannerNotes TEXT,
+      $mealPlannerTime TEXT,
+      FOREIGN KEY ($mealPlannerRecipeId) REFERENCES $cardsTable ($cardId)
+    )
+  ''');
+
     await _insertInitialFolders(db);
     await _insertInitialCards(db);
+    await _insertInitialMealPlans(db);
   }
 
   Future<void> _insertInitialFolders(Database db) async {
@@ -215,6 +238,36 @@ class DatabaseHelper {
 
     for (var card in cards) {
       await db.insert(cardsTable, card);
+    }
+  }
+
+  Future<void> _insertInitialMealPlans(Database db) async {
+    List<Map<String, dynamic>> mealPlans = [
+      {
+        mealPlannerDate: '2024-10-28',
+        mealPlannerMealType: 'Breakfast',
+        mealPlannerRecipeId: 1, // Assuming the Oatmeal recipe has id 1
+        mealPlannerNotes: 'Start the day healthy!',
+        mealPlannerTime: '08:00 AM',
+      },
+      {
+        mealPlannerDate: '2024-10-28',
+        mealPlannerMealType: 'Lunch',
+        mealPlannerRecipeId: 3, // Assuming Chicken Salad recipe has id 3
+        mealPlannerNotes: 'Light and nutritious.',
+        mealPlannerTime: '12:30 PM',
+      },
+      {
+        mealPlannerDate: '2024-10-28',
+        mealPlannerMealType: 'Dinner',
+        mealPlannerRecipeId: 5, // Assuming Chicken Parmesan recipe has id 5
+        mealPlannerNotes: 'A classic favorite!',
+        mealPlannerTime: '06:30 PM',
+      },
+    ];
+
+    for (var mealPlan in mealPlans) {
+      await db.insert(mealPlannerTable, mealPlan);
     }
   }
 
@@ -469,5 +522,47 @@ class DatabaseHelper {
       where: '$groceryItemId = ?',
       whereArgs: [itemId],
     );
+  }
+
+  // Method to insert a meal plan
+  Future<int> insertMealPlan(String date, String mealType, int recipeId,
+      String notes, String time, int servings) async {
+    Map<String, dynamic> row = {
+      mealPlannerDate: date,
+      mealPlannerMealType: mealType,
+      mealPlannerRecipeId: recipeId,
+      mealPlannerNotes: notes,
+      mealPlannerTime: time,
+    };
+    return await _db.insert(mealPlannerTable, row);
+  }
+
+// Method to fetch meal plans for a specific date
+  Future<List<Map<String, dynamic>>> getMealPlansByDate(String date) async {
+    return await _db.query(
+      mealPlannerTable,
+      where: '$mealPlannerDate = ?',
+      whereArgs: [date],
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> getMealPlans() async {
+    return await _db.query(mealPlannerTable);
+  }
+
+  Future<String?> getMealNameById(int recipeId) async {
+    final List<Map<String, dynamic>> results = await _db.query(
+      cardsTable,
+      columns: [cardName],
+      where: '$cardId = ?',
+      whereArgs: [recipeId],
+    );
+
+    // Check if any results were returned
+    if (results.isNotEmpty) {
+      return results.first[cardName] as String; // Return the meal name
+    }
+
+    return null; // Return null if no meal was found with the given ID
   }
 }
