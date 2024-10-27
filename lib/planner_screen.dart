@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recipemaster/SettingsScreen.dart';
 import 'database_helper.dart';
 import 'FolderScreen.dart';
 import 'shopping_list_screen.dart';
@@ -57,8 +58,9 @@ class _PlannerScreenState extends State<PlannerScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  Placeholder()), // Replace with your Settings screen
+              builder: (context) => SettingsScreen(
+                  dbHelper:
+                      widget.dbHelper)), // Replace with your Settings screen
         );
         break;
     }

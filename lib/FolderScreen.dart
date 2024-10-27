@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recipemaster/SettingsScreen.dart';
 import 'database_helper.dart';
 import 'CardsScreen.dart';
 import 'shopping_list_screen.dart';
@@ -149,7 +150,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
         // Already on the Folders screen; no navigation needed
         break;
       case 1:
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
               builder: (context) =>
@@ -157,16 +158,17 @@ class _FoldersScreenState extends State<FoldersScreen> {
         );
         break;
       case 2:
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
               builder: (context) => PlannerScreen(dbHelper: widget.dbHelper)),
         );
         break;
       case 3:
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Placeholder()),
+          MaterialPageRoute(
+              builder: (context) => SettingsScreen(dbHelper: widget.dbHelper)),
         );
         break;
     }
