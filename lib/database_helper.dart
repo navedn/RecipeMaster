@@ -527,9 +527,14 @@ class DatabaseHelper {
     );
   }
 
-  // Method to insert a meal plan
-  Future<int> insertMealPlan(String date, String mealType, int recipeId,
-      String notes, String time, int servings) async {
+  // Method to insert a new meal plan into the database
+  Future<int> insertMealPlan({
+    required String date,
+    required String mealType,
+    int? recipeId, // Optional in case no recipe is selected
+    String? notes,
+    String? time,
+  }) async {
     Map<String, dynamic> row = {
       mealPlannerDate: date,
       mealPlannerMealType: mealType,
@@ -537,6 +542,8 @@ class DatabaseHelper {
       mealPlannerNotes: notes,
       mealPlannerTime: time,
     };
+
+    // Insert the meal plan into the database and return the new ID
     return await _db.insert(mealPlannerTable, row);
   }
 

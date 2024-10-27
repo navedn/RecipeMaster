@@ -25,6 +25,67 @@ class _PlannerScreenState extends State<PlannerScreen> {
     });
   }
 
+  Future<void> _addNewMealPlan() async {
+    final TextEditingController dateController = TextEditingController();
+    final TextEditingController mealTypeController = TextEditingController();
+    final TextEditingController notesController = TextEditingController();
+    final TextEditingController timeController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Add New Meal Plan"),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: dateController,
+                  decoration: InputDecoration(labelText: 'Date'),
+                ),
+                TextField(
+                  controller: mealTypeController,
+                  decoration: InputDecoration(labelText: 'Meal Type'),
+                ),
+                TextField(
+                  controller: notesController,
+                  decoration: InputDecoration(labelText: 'Notes'),
+                ),
+                TextField(
+                  controller: timeController,
+                  decoration: InputDecoration(labelText: 'Time'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                // Call the insertMealPlan method to add the new meal
+                await widget.dbHelper.insertMealPlan(
+                  date: dateController.text,
+                  mealType: mealTypeController.text,
+                  notes: notesController.text,
+                  time: timeController.text,
+                );
+
+                _fetchMealPlans(); // Refresh the list of meal plans
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("Add Meal"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _deleteMealPlan(int mealPlannerId) async {
     debugPrint('Deleting Meal Plan with ID: $mealPlannerId'); // Add debug print
     await widget.dbHelper.deleteMealPlan(mealPlannerId);
@@ -194,6 +255,10 @@ class _PlannerScreenState extends State<PlannerScreen> {
             );
           }
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _addNewMealPlan,
+        child: Icon(Icons.add),
       ),
     );
   }
