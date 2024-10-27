@@ -244,6 +244,7 @@ class DatabaseHelper {
   Future<void> _insertInitialMealPlans(Database db) async {
     List<Map<String, dynamic>> mealPlans = [
       {
+        mealPlannerId: 1,
         mealPlannerDate: '2024-10-28',
         mealPlannerMealType: 'Breakfast',
         mealPlannerRecipeId: 1, // Assuming the Oatmeal recipe has id 1
@@ -251,6 +252,7 @@ class DatabaseHelper {
         mealPlannerTime: '08:00 AM',
       },
       {
+        mealPlannerId: 2,
         mealPlannerDate: '2024-10-28',
         mealPlannerMealType: 'Lunch',
         mealPlannerRecipeId: 3, // Assuming Chicken Salad recipe has id 3
@@ -258,6 +260,7 @@ class DatabaseHelper {
         mealPlannerTime: '12:30 PM',
       },
       {
+        mealPlannerId: 3,
         mealPlannerDate: '2024-10-28',
         mealPlannerMealType: 'Dinner',
         mealPlannerRecipeId: 5, // Assuming Chicken Parmesan recipe has id 5
@@ -507,6 +510,15 @@ class DatabaseHelper {
     );
   }
 
+  // Method to delete a meal plan by ID
+  Future<int> deleteMealPlan(int id) async {
+    return await _db.delete(
+      mealPlannerTable,
+      where: '$mealPlannerId = ?',
+      whereArgs: [id],
+    );
+  }
+
   Future<List<Map<String, dynamic>>> getGroceryListItems() async {
     final db = await _db;
     return await db.query(
@@ -584,14 +596,5 @@ class DatabaseHelper {
     }
 
     return null; // Return null if no meal was found with the given ID
-  }
-
-  // Method to delete a meal plan by ID
-  Future<int> deleteMealPlan(int mealPlannerId) async {
-    return await _db.delete(
-      mealPlannerTable,
-      where: '$mealPlannerId = ?',
-      whereArgs: [mealPlannerId],
-    );
   }
 }
