@@ -543,14 +543,14 @@ class DatabaseHelper {
   }
 
   Future<List<Map<String, dynamic>>> getGroceryListItems() async {
-    final db = await _db;
+    final db = _db;
     return await db.query(
       groceryListTable,
     );
   }
 
   Future<void> updateGroceryItemChecked(int itemId, bool isChecked) async {
-    final db = await _db;
+    final db = _db;
     await db.update(
       groceryListTable,
       {groceryItemChecked: isChecked ? 1 : 0},

@@ -7,7 +7,7 @@ import 'planner_screen.dart';
 class SettingsScreen extends StatefulWidget {
   final DatabaseHelper dbHelper;
 
-  const SettingsScreen({Key? key, required this.dbHelper}) : super(key: key);
+  const SettingsScreen({super.key, required this.dbHelper});
 
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
@@ -55,11 +55,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: const Text('Settings'),
       ),
       body: Column(
         children: [
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Center(
             child: ElevatedButton(
               onPressed: () {
@@ -68,10 +68,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 // Implement Reset to Defaults functionality here
                 print('Reset to Defaults pressed');
               },
-              child: Text('Reset to Defaults'),
+              child: const Text('Reset to Defaults'),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
               widget.dbHelper.clearAllData();
@@ -79,7 +79,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               // Implement Clear Cache functionality here
               print('Clear data pressed');
             },
-            child: Text('Clear Data'),
+            child: const Text('Clear Data'),
           ),
         ],
       ),

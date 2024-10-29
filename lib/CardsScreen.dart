@@ -7,12 +7,12 @@ class CardsScreen extends StatefulWidget {
   final String folderName;
   final DatabaseHelper dbHelper;
 
-  CardsScreen({
+  const CardsScreen({
     required this.folderID,
     required this.folderName,
     required this.dbHelper,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _CardsScreenState createState() => _CardsScreenState();
@@ -58,14 +58,14 @@ class _CardsScreenState extends State<CardsScreen> {
 
     int? selectedFolderId = card[DatabaseHelper.cardFolderId];
 
-    Future<List<Map<String, dynamic>>> _foldersFuture =
+    Future<List<Map<String, dynamic>>> foldersFuture =
         widget.dbHelper.getFolders();
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Edit Recipe"),
+          title: const Text("Edit Recipe"),
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return Column(
@@ -73,48 +73,51 @@ class _CardsScreenState extends State<CardsScreen> {
                 children: [
                   TextField(
                     controller: nameController,
-                    decoration: InputDecoration(labelText: "New Recipe Name"),
+                    decoration:
+                        const InputDecoration(labelText: "New Recipe Name"),
                   ),
                   TextField(
                     controller: servingSizeController,
-                    decoration: InputDecoration(labelText: "Serving Size"),
+                    decoration:
+                        const InputDecoration(labelText: "Serving Size"),
                     keyboardType: TextInputType.number,
                   ),
                   TextField(
                     controller: prepTimeController,
-                    decoration:
-                        InputDecoration(labelText: "Preparation Time (min)"),
+                    decoration: const InputDecoration(
+                        labelText: "Preparation Time (min)"),
                     keyboardType: TextInputType.number,
                   ),
                   TextField(
                     controller: cookTimeController,
                     decoration:
-                        InputDecoration(labelText: "Cooking Time (min)"),
+                        const InputDecoration(labelText: "Cooking Time (min)"),
                     keyboardType: TextInputType.number,
                   ),
                   TextField(
                     controller: ingredientsController,
-                    decoration: InputDecoration(labelText: "Ingredients"),
+                    decoration: const InputDecoration(labelText: "Ingredients"),
                     maxLines:
                         3, // Increase the number of lines for a taller input
                     keyboardType: TextInputType.multiline,
                   ),
                   TextField(
                     controller: instructionsController,
-                    decoration: InputDecoration(labelText: "Instructions"),
+                    decoration:
+                        const InputDecoration(labelText: "Instructions"),
                     maxLines:
                         5, // Increase the number of lines for a taller input
                     keyboardType: TextInputType.multiline,
                   ),
                   FutureBuilder<List<Map<String, dynamic>>>(
-                    future: _foldersFuture,
+                    future: foldersFuture,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
+                        return const CircularProgressIndicator();
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Text('No Folders Found');
+                        return const Text('No Folders Found');
                       } else {
                         var folders = snapshot.data!;
                         return DropdownButton<int>(
@@ -143,7 +146,7 @@ class _CardsScreenState extends State<CardsScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -168,7 +171,7 @@ class _CardsScreenState extends State<CardsScreen> {
                 _refreshUI();
                 Navigator.of(context).pop();
               },
-              child: Text("Save"),
+              child: const Text("Save"),
             ),
           ],
         );
@@ -191,45 +194,47 @@ class _CardsScreenState extends State<CardsScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Add New Recipe"),
+          title: const Text("Add New Recipe"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: nameController,
-                decoration: InputDecoration(labelText: "Recipe Name"),
+                decoration: const InputDecoration(labelText: "Recipe Name"),
               ),
               TextField(
                 controller: servingSizeController,
-                decoration: InputDecoration(labelText: "Serving Size"),
+                decoration: const InputDecoration(labelText: "Serving Size"),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: prepTimeController,
                 decoration:
-                    InputDecoration(labelText: "Preparation Time (min)"),
+                    const InputDecoration(labelText: "Preparation Time (min)"),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: cookTimeController,
-                decoration: InputDecoration(labelText: "Cooking Time (min)"),
+                decoration:
+                    const InputDecoration(labelText: "Cooking Time (min)"),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: ingredientsController,
-                decoration: InputDecoration(labelText: "Ingredients"),
+                decoration: const InputDecoration(labelText: "Ingredients"),
                 maxLines: 3,
                 keyboardType: TextInputType.multiline,
               ),
               TextField(
                 controller: instructionsController,
-                decoration: InputDecoration(labelText: "Instructions"),
+                decoration: const InputDecoration(labelText: "Instructions"),
                 maxLines: 5,
                 keyboardType: TextInputType.multiline,
               ),
               TextField(
                 controller: imageUrlController,
-                decoration: InputDecoration(labelText: "Recipe Image Path"),
+                decoration:
+                    const InputDecoration(labelText: "Recipe Image Path"),
               ),
             ],
           ),
@@ -238,7 +243,7 @@ class _CardsScreenState extends State<CardsScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -267,7 +272,7 @@ class _CardsScreenState extends State<CardsScreen> {
                 _refreshUI(); // Refresh the UI after adding the card
                 Navigator.of(context).pop();
               },
-              child: Text("Add"),
+              child: const Text("Add"),
             ),
           ],
         );
@@ -280,14 +285,14 @@ class _CardsScreenState extends State<CardsScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Delete Recipe"),
-          content: Text("Are you sure you want to delete this recipe?"),
+          title: const Text("Delete Recipe"),
+          content: const Text("Are you sure you want to delete this recipe?"),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -295,7 +300,7 @@ class _CardsScreenState extends State<CardsScreen> {
                 _refreshUI(); // Refresh the UI after deletion
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text("Delete"),
+              child: const Text("Delete"),
             ),
           ],
         );
@@ -310,7 +315,7 @@ class _CardsScreenState extends State<CardsScreen> {
         title: Text("Recipes for ${widget.folderName}"),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () => _showAddCardDialog(),
           ),
         ],
@@ -319,11 +324,11 @@ class _CardsScreenState extends State<CardsScreen> {
         future: _cardsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No Cards Found'));
+            return const Center(child: Text('No Cards Found'));
           } else {
             var cards = snapshot.data!;
             return ListView.builder(
@@ -331,7 +336,7 @@ class _CardsScreenState extends State<CardsScreen> {
               itemBuilder: (context, index) {
                 var card = cards[index];
                 return ListTile(
-                  leading: Container(
+                  leading: SizedBox(
                     width: 40,
                     height: 200,
                     child: card[DatabaseHelper.cardImageUrl] != null &&
@@ -341,11 +346,11 @@ class _CardsScreenState extends State<CardsScreen> {
                             fit: BoxFit
                                 .cover, // This will cover the whole container without distorting
                             errorBuilder: (context, error, stackTrace) {
-                              return Icon(Icons.image,
+                              return const Icon(Icons.image,
                                   size: 50); // Fallback icon
                             },
                           )
-                        : Icon(Icons.image, size: 50), // Fallback icon
+                        : const Icon(Icons.image, size: 50), // Fallback icon
                   ),
 // Fallback icon
                   title: Text(card[DatabaseHelper.cardName]),
@@ -353,14 +358,14 @@ class _CardsScreenState extends State<CardsScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.edit,
                           color: Colors.blue,
                         ),
                         onPressed: () => _showRenameDialog(card),
                       ),
                       IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.delete,
                           color: Colors.red,
                         ),

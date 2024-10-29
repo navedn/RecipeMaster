@@ -8,7 +8,7 @@ import 'FolderScreen.dart'; // Import FoldersScreen for navigation
 class ShoppingListScreen extends StatefulWidget {
   final DatabaseHelper dbHelper;
 
-  ShoppingListScreen({required this.dbHelper, Key? key}) : super(key: key);
+  const ShoppingListScreen({required this.dbHelper, super.key});
 
   @override
   _ShoppingListScreenState createState() => _ShoppingListScreenState();
@@ -87,11 +87,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
           title: Text(itemId == null ? 'Add Item' : 'Edit Item'),
           content: TextField(
             controller: controller,
-            decoration: InputDecoration(labelText: 'Item Name'),
+            decoration: const InputDecoration(labelText: 'Item Name'),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -153,16 +153,16 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Shopping List'),
+        title: const Text('Shopping List'),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () => _showItemDialog(), // Show dialog to add new item
           ),
         ],
       ),
       body: groceryList.isEmpty
-          ? Center(child: Text('No items in your grocery list.'))
+          ? const Center(child: Text('No items in your grocery list.'))
           : ListView.builder(
               itemCount: groceryList.length,
               itemBuilder: (context, index) {
@@ -186,7 +186,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.edit, color: Colors.blue),
+                        icon: const Icon(Icons.edit, color: Colors.blue),
                         onPressed: () {
                           _showItemDialog(
                             itemId: groceryList[index]['_id'],
@@ -195,7 +195,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                         },
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
+                        icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
                           _deleteGroceryItem(groceryList[index]['_id']);
                         },

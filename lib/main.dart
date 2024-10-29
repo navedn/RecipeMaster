@@ -17,12 +17,12 @@ class AppColorTheme {
       primaryColor: primary,
       scaffoldBackgroundColor: background,
       cardColor: surface,
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         color: primary,
         iconTheme: IconThemeData(color: Colors.white),
         titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
       ),
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: secondary,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -40,13 +40,13 @@ class AppColorTheme {
         ),
       ),
       textTheme: TextTheme(
-        headlineSmall: TextStyle(
+        headlineSmall: const TextStyle(
             fontSize: 20.0, fontWeight: FontWeight.bold, color: primary),
-        bodyMedium: TextStyle(fontSize: 16.0, color: Colors.black),
+        bodyMedium: const TextStyle(fontSize: 16.0, color: Colors.black),
         bodyLarge: TextStyle(fontSize: 14.0, color: Colors.grey[1000]),
       ),
-      iconTheme: IconThemeData(color: primary),
-      colorScheme: ColorScheme.light(
+      iconTheme: const IconThemeData(color: primary),
+      colorScheme: const ColorScheme.light(
         primary: primary,
         secondary: secondary,
         surface: surface,
@@ -66,7 +66,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   final DatabaseHelper dbHelper;
 
-  const MyApp({Key? key, required this.dbHelper}) : super(key: key);
+  const MyApp({super.key, required this.dbHelper});
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +78,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => FoldersScreen(dbHelper: dbHelper),
         '/shopping': (context) => ShoppingListScreen(dbHelper: dbHelper),
         '/planner': (context) => PlannerScreen(dbHelper: dbHelper),
-        '/settings': (context) => Placeholder(),
+        '/settings': (context) => const Placeholder(),
       },
     );
   }

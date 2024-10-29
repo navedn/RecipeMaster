@@ -8,7 +8,7 @@ import 'planner_screen.dart';
 class FoldersScreen extends StatefulWidget {
   final DatabaseHelper dbHelper;
 
-  FoldersScreen({required this.dbHelper, Key? key}) : super(key: key);
+  const FoldersScreen({required this.dbHelper, super.key});
 
   @override
   State<FoldersScreen> createState() => _FoldersScreenState();
@@ -37,20 +37,20 @@ class _FoldersScreenState extends State<FoldersScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Add New Recipe Category'),
+          title: const Text('Add New Recipe Category'),
           content: TextField(
             controller: folderNameController,
-            decoration: InputDecoration(hintText: "Recipe Category Name"),
+            decoration: const InputDecoration(hintText: "Recipe Category Name"),
           ),
           actions: [
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Add'),
+              child: const Text('Add'),
               onPressed: () async {
                 if (folderNameController.text.isNotEmpty) {
                   await widget.dbHelper.insertFolder(folderNameController.text);
@@ -76,20 +76,20 @@ class _FoldersScreenState extends State<FoldersScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Update Recipe Category'),
+          title: const Text('Update Recipe Category'),
           content: TextField(
             controller: folderNameController,
-            decoration: InputDecoration(hintText: "New Recipe Name"),
+            decoration: const InputDecoration(hintText: "New Recipe Name"),
           ),
           actions: [
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Update'),
+              child: const Text('Update'),
               onPressed: () async {
                 if (folderNameController.text.isNotEmpty) {
                   await widget.dbHelper
@@ -113,18 +113,18 @@ class _FoldersScreenState extends State<FoldersScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Delete Recipe Category'),
-          content:
-              Text('Are you sure you want to delete this recipe category?'),
+          title: const Text('Delete Recipe Category'),
+          content: const Text(
+              'Are you sure you want to delete this recipe category?'),
           actions: [
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Delete'),
+              child: const Text('Delete'),
               onPressed: () async {
                 await widget.dbHelper.deleteFolder(folderId);
                 setState(() {
@@ -178,10 +178,10 @@ class _FoldersScreenState extends State<FoldersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('RecipeMaster'),
+        title: const Text('RecipeMaster'),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: _addFolder,
           ),
         ],
@@ -190,11 +190,11 @@ class _FoldersScreenState extends State<FoldersScreen> {
         future: _foldersFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No Folders Found'));
+            return const Center(child: Text('No Folders Found'));
           } else {
             var folders = snapshot.data!;
             return ListView.builder(
@@ -213,19 +213,19 @@ class _FoldersScreenState extends State<FoldersScreen> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return ListTile(
                         title: Text(folder[DatabaseHelper.folderName]),
-                        subtitle: Text('Loading recipe info...'),
+                        subtitle: const Text('Loading recipe info...'),
                       );
                     } else if (snapshot.hasError) {
                       return ListTile(
                         title: Text(folder[DatabaseHelper.folderName]),
-                        subtitle: Text('Error loading recipe info'),
+                        subtitle: const Text('Error loading recipe info'),
                       );
                     } else {
                       int cardCount = snapshot.data![0] as int;
                       String? firstCardImageUrl = snapshot.data![1] as String?;
 
                       return ListTile(
-                        leading: Container(
+                        leading: SizedBox(
                           width: 40,
                           height: 200,
                           child: firstCardImageUrl != null
@@ -234,11 +234,11 @@ class _FoldersScreenState extends State<FoldersScreen> {
                                   fit: BoxFit
                                       .cover, // This will cover the whole container without distorting
                                   errorBuilder: (context, error, stackTrace) {
-                                    return Icon(Icons.image,
+                                    return const Icon(Icons.image,
                                         size: 50); // Fallback icon
                                   },
                                 )
-                              : Icon(Icons.image, size: 50),
+                              : const Icon(Icons.image, size: 50),
                         ),
                         title: Text(folder[DatabaseHelper.folderName]),
                         subtitle: Text('$cardCount recipes'),
@@ -246,14 +246,14 @@ class _FoldersScreenState extends State<FoldersScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: Icon(Icons.edit, color: Colors.blue),
+                              icon: const Icon(Icons.edit, color: Colors.blue),
                               onPressed: () => _updateFolder(
                                 folder[DatabaseHelper.folderId],
                                 folder[DatabaseHelper.folderName],
                               ),
                             ),
                             IconButton(
-                              icon: Icon(Icons.delete, color: Colors.red),
+                              icon: const Icon(Icons.delete, color: Colors.red),
                               onPressed: () => _deleteFolder(
                                 folder[DatabaseHelper.folderId],
                               ),

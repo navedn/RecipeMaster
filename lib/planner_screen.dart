@@ -7,7 +7,7 @@ import 'shopping_list_screen.dart';
 class PlannerScreen extends StatefulWidget {
   final DatabaseHelper dbHelper;
 
-  const PlannerScreen({Key? key, required this.dbHelper}) : super(key: key);
+  const PlannerScreen({super.key, required this.dbHelper});
 
   @override
   _PlannerScreenState createState() => _PlannerScreenState();
@@ -91,29 +91,29 @@ class _PlannerScreenState extends State<PlannerScreen> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
-              title: Text("Add New Meal Plan"),
+              title: const Text("Add New Meal Plan"),
               content: SingleChildScrollView(
                 child: Column(
                   children: [
                     TextField(
                       controller: dateController,
-                      decoration: InputDecoration(labelText: 'Date'),
+                      decoration: const InputDecoration(labelText: 'Date'),
                     ),
                     TextField(
                       controller: mealTypeController,
-                      decoration: InputDecoration(labelText: 'Meal Type'),
+                      decoration: const InputDecoration(labelText: 'Meal Type'),
                     ),
                     TextField(
                       controller: notesController,
-                      decoration: InputDecoration(labelText: 'Notes'),
+                      decoration: const InputDecoration(labelText: 'Notes'),
                     ),
                     TextField(
                       controller: timeController,
-                      decoration: InputDecoration(labelText: 'Time'),
+                      decoration: const InputDecoration(labelText: 'Time'),
                     ),
                     DropdownButton<int>(
                       value: selectedRecipeId,
-                      hint: Text('Select a Recipe'),
+                      hint: const Text('Select a Recipe'),
                       items: recipes.map<DropdownMenuItem<int>>((recipe) {
                         return DropdownMenuItem<int>(
                           value: recipe['id'],
@@ -132,7 +132,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: Text("Cancel"),
+                  child: const Text("Cancel"),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -151,11 +151,11 @@ class _PlannerScreenState extends State<PlannerScreen> {
                       Navigator.of(context).pop();
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Please select a recipe')),
+                        const SnackBar(content: Text('Please select a recipe')),
                       );
                     }
                   },
-                  child: Text("Add Meal"),
+                  child: const Text("Add Meal"),
                 ),
               ],
             );
@@ -176,14 +176,15 @@ class _PlannerScreenState extends State<PlannerScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Delete Meal Plan"),
-          content: Text("Are you sure you want to delete this meal plan?"),
+          title: const Text("Delete Meal Plan"),
+          content:
+              const Text("Are you sure you want to delete this meal plan?"),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -191,7 +192,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
                 await _deleteMealPlan(mealPlannerId);
                 Navigator.of(context).pop(); // Close the dialog after deletion
               },
-              child: Text("Delete"),
+              child: const Text("Delete"),
             ),
           ],
         );
@@ -211,7 +212,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
         TextEditingController(text: mealPlan[DatabaseHelper.mealPlannerTime]);
 
     // Fetch all recipes for the dropdown
-    Future<List<Map<String, dynamic>>> _fetchRecipes() async {
+    Future<List<Map<String, dynamic>>> fetchRecipes() async {
       final List<Map<String, dynamic>> recipeIds =
           await widget.dbHelper.getAllRecipeIds();
       List<Map<String, dynamic>> recipes = [];
@@ -232,38 +233,39 @@ class _PlannerScreenState extends State<PlannerScreen> {
         int? selectedRecipeId = mealPlan[
             DatabaseHelper.mealPlannerRecipeId]; // Set the initial value
         return FutureBuilder<List<Map<String, dynamic>>>(
-          future: _fetchRecipes(), // Fetch recipes asynchronously
+          future: fetchRecipes(), // Fetch recipes asynchronously
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
               final recipes = snapshot.data!;
               return AlertDialog(
-                title: Text("Edit Meal Plan"),
+                title: const Text("Edit Meal Plan"),
                 content: SingleChildScrollView(
                   child: Column(
                     children: [
                       TextField(
                         controller: dateController,
-                        decoration: InputDecoration(labelText: 'Date'),
+                        decoration: const InputDecoration(labelText: 'Date'),
                       ),
                       TextField(
                         controller: mealTypeController,
-                        decoration: InputDecoration(labelText: 'Meal Type'),
+                        decoration:
+                            const InputDecoration(labelText: 'Meal Type'),
                       ),
                       TextField(
                         controller: notesController,
-                        decoration: InputDecoration(labelText: 'Notes'),
+                        decoration: const InputDecoration(labelText: 'Notes'),
                       ),
                       TextField(
                         controller: timeController,
-                        decoration: InputDecoration(labelText: 'Time'),
+                        decoration: const InputDecoration(labelText: 'Time'),
                       ),
                       DropdownButton<int>(
                         value: selectedRecipeId,
-                        hint: Text('Select a Recipe'),
+                        hint: const Text('Select a Recipe'),
                         items: recipes.map<DropdownMenuItem<int>>((recipe) {
                           return DropdownMenuItem<int>(
                             value: recipe['id'],
@@ -284,7 +286,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text("Cancel"),
+                    child: const Text("Cancel"),
                   ),
                   ElevatedButton(
                     onPressed: () async {
@@ -299,7 +301,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
                       _fetchMealPlans(); // Refresh the meal plans list
                       Navigator.of(context).pop();
                     },
-                    child: Text("Save"),
+                    child: const Text("Save"),
                   ),
                 ],
               );
@@ -314,17 +316,17 @@ class _PlannerScreenState extends State<PlannerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Meal Planner'),
+        title: const Text('Meal Planner'),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _mealPlans,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No meal plans available.'));
+            return const Center(child: Text('No meal plans available.'));
           } else {
             return ListView.builder(
               itemCount: snapshot.data!.length,
@@ -337,7 +339,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
                   builder: (context, mealNameSnapshot) {
                     if (mealNameSnapshot.connectionState ==
                         ConnectionState.waiting) {
-                      return ListTile(
+                      return const ListTile(
                         title: Text('Loading meal name...'),
                       );
                     } else if (mealNameSnapshot.hasError) {
@@ -348,7 +350,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
                       final mealName = mealNameSnapshot.data ?? 'Unknown Meal';
 
                       return Card(
-                        margin: EdgeInsets.all(8.0),
+                        margin: const EdgeInsets.all(8.0),
                         child: ListTile(
                           title: Text(
                               '${mealPlan[DatabaseHelper.mealPlannerMealType]}: $mealName'),
@@ -360,12 +362,14 @@ class _PlannerScreenState extends State<PlannerScreen> {
                               Text(
                                   '${mealPlan[DatabaseHelper.mealPlannerDate]}'),
                               IconButton(
-                                icon: Icon(Icons.edit, color: Colors.blue),
+                                icon:
+                                    const Icon(Icons.edit, color: Colors.blue),
                                 onPressed: () =>
                                     _showEditMealPlanDialog(mealPlan),
                               ),
                               IconButton(
-                                icon: Icon(Icons.delete, color: Colors.red),
+                                icon:
+                                    const Icon(Icons.delete, color: Colors.red),
                                 onPressed: () => _showDeleteConfirmationDialog(
                                     mealPlan[DatabaseHelper.mealPlannerId]),
                               ),
@@ -383,7 +387,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addNewMealPlan,
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,

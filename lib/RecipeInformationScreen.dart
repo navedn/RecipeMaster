@@ -1,20 +1,42 @@
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
 
-class RecipeInformationScreen extends StatelessWidget {
+class RecipeInformationScreen extends StatefulWidget {
   final DatabaseHelper dbHelper;
 
   final Map<String, dynamic> card;
 
-  RecipeInformationScreen({required this.card, required this.dbHelper});
+  const RecipeInformationScreen(
+      {super.key, required this.card, required this.dbHelper});
+
+  @override
+  State<RecipeInformationScreen> createState() =>
+      _RecipeInformationScreenState();
+}
+
+class _RecipeInformationScreenState extends State<RecipeInformationScreen> {
+  bool isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('Card data: $card'); // Debug line
+    debugPrint('Card data: ${widget.card}'); // Debug line
+    IconData favIcon = Icons.favorite_border;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(card['name'] ?? 'Card Details'), // Updated key
+        title: Text(widget.card['name'] ?? 'Card Details'), // Updated key
+        actions: [
+          IconButton(
+            icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+            onPressed: () {
+              setState(() {
+                isFavorite = !isFavorite; // Toggle favorite state
+              });
+              debugPrint(
+                  'Favorite status: $isFavorite'); // Debug favorite state
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -22,57 +44,57 @@ class RecipeInformationScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Recipe Image
-            Container(
+            SizedBox(
               width: double.infinity,
               height: 250,
               child: Image.asset(
-                card['image_url'] ?? '',
+                widget.card['image_url'] ?? '',
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  return Icon(Icons.image, size: 50); // Fallback icon
+                  return const Icon(Icons.image, size: 50); // Fallback icon
                 },
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
 
             Text(
-              'Recipe Serving Size: ${card['serving_size'] ?? 'Unknown'} servings', // Updated key
-              style: TextStyle(fontSize: 18),
+              'Recipe Serving Size: ${widget.card['serving_size'] ?? 'Unknown'} servings', // Updated key
+              style: const TextStyle(fontSize: 18),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
-              'Recipe Prep Time: ${card['prep_time'] ?? 'Unknown'} minutes', // Updated key
-              style: TextStyle(fontSize: 18),
+              'Recipe Prep Time: ${widget.card['prep_time'] ?? 'Unknown'} minutes', // Updated key
+              style: const TextStyle(fontSize: 18),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
-              'Recipe Cook Time: ${card['cook_time'] ?? 'Unknown'} minutes', // Updated key
-              style: TextStyle(fontSize: 18),
+              'Recipe Cook Time: ${widget.card['cook_time'] ?? 'Unknown'} minutes', // Updated key
+              style: const TextStyle(fontSize: 18),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-            Text(
+            const Text(
               'Ingredients:',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
 
             // List of Ingredients
-            _buildIngredientsList(card['ingredients']),
+            _buildIngredientsList(widget.card['ingredients']),
 
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-            Text(
+            const Text(
               'Instructions:',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
 
             Text(
-              card['instructions'] ?? 'Unknown', // Updated key
-              style: TextStyle(fontSize: 18),
+              widget.card['instructions'] ?? 'Unknown', // Updated key
+              style: const TextStyle(fontSize: 18),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -87,7 +109,7 @@ class RecipeInformationScreen extends StatelessWidget {
 
     return ListView.builder(
       physics:
-          NeverScrollableScrollPhysics(), // Disable scrolling for inner ListView
+          const NeverScrollableScrollPhysics(), // Disable scrolling for inner ListView
       shrinkWrap: true, // Allow the ListView to take only the needed height
       itemCount: ingredientList.length,
       itemBuilder: (context, index) {
@@ -99,14 +121,14 @@ class RecipeInformationScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
                 child: Text(
                   '- ${ingredientList[index]}',
-                  style: TextStyle(fontSize: 18),
+                  style: const TextStyle(fontSize: 18),
                 ),
               ),
             ),
             IconButton(
-              icon: Icon(Icons.add, color: Colors.green),
+              icon: const Icon(Icons.add, color: Colors.green),
               onPressed: () async {
-                await dbHelper.insertGroceryItem(ingredientList[index]);
+                await widget.dbHelper.insertGroceryItem(ingredientList[index]);
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
