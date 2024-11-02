@@ -163,6 +163,7 @@ class DatabaseHelper {
               "4. Flip and cook until browned on the other side. Repeat with remaining batter.\n",
       DatabaseHelper.cardPrepTime: 5,
       DatabaseHelper.cardCookTime: 15,
+      DatabaseHelper.cardIsFavorite: 0,
     });
 
 // Lunch Recipes
@@ -302,11 +303,21 @@ class DatabaseHelper {
   }
 
   // Fetch cards in a folder
-  Future<List<Map<String, dynamic>>> getCardsInFolder(int folderId) async {
+  Future<List<Map<String, dynamic>>> getCardsInFolder(int folderId,
+      {String query = ''}) async {
     return await _db.query(
       cardsTable,
       where: '$cardFolderId = ?',
       whereArgs: [folderId],
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> searchCardsInFolder(
+      int folderId, String query) async {
+    return await _db.query(
+      cardsTable,
+      where: '$cardFolderId = ? AND $cardName LIKE ?',
+      whereArgs: [folderId, '%$query%'],
     );
   }
 

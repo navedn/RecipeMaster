@@ -20,6 +20,7 @@ class CardsScreen extends StatefulWidget {
 
 class _CardsScreenState extends State<CardsScreen> {
   late Future<List<Map<String, dynamic>>> _cardsFuture;
+  String _searchTerm = '';
 
   @override
   void initState() {
@@ -31,10 +32,52 @@ class _CardsScreenState extends State<CardsScreen> {
     _cardsFuture = widget.dbHelper.getCardsInFolder(widget.folderID);
   }
 
+  void _loadSearchedCards() {
+    _cardsFuture =
+        widget.dbHelper.searchCardsInFolder(widget.folderID, _searchTerm);
+  }
+
   void _refreshUI() {
     setState(() {
       _loadCards();
     });
+  }
+
+  void _showSearchDialog() {
+    TextEditingController searchController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Search Recipes"),
+          content: TextField(
+            controller: searchController,
+            decoration: const InputDecoration(labelText: "Enter recipe name"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _searchTerm = searchController.text;
+                  setState(() {
+                    _loadSearchedCards();
+                  }); // Trigger UI refresh with new search term
+                });
+                Navigator.of(context).pop();
+              },
+              child: const Text("Search"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showRenameDialog(Map<String, dynamic> card) {
@@ -314,6 +357,10 @@ class _CardsScreenState extends State<CardsScreen> {
       appBar: AppBar(
         title: Text("Recipes for ${widget.folderName}"),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () => _showSearchDialog(),
+          ),
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () => _showAddCardDialog(),
