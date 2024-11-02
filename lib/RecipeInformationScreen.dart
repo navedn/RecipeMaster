@@ -18,9 +18,33 @@ class _RecipeInformationScreenState extends State<RecipeInformationScreen> {
   bool isFavorite = false;
 
   @override
+  void initState() {
+    super.initState();
+    _loadFavoriteStatus(); // Load initial favorite status
+  }
+
+  Future<void> _loadFavoriteStatus() async {
+    // Load initial favorite status from the database
+    isFavorite = widget.card['is_fav'] == 1;
+    setState(() {});
+  }
+
+  Future<void> _updateFavoriteStatus() async {
+    setState(() {
+      isFavorite = !isFavorite; // Toggle the favorite status
+    });
+
+    // Update the favorite status in the database
+    await widget.dbHelper.updateCardIsFavorite(
+      widget.card['_id'],
+      isFavorite,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     debugPrint('Card data: ${widget.card}'); // Debug line
-    IconData favIcon = Icons.favorite_border;
+    debugPrint('Card data 2: ${widget.card['_id']}');
 
     return Scaffold(
       appBar: AppBar(
@@ -28,13 +52,7 @@ class _RecipeInformationScreenState extends State<RecipeInformationScreen> {
         actions: [
           IconButton(
             icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-            onPressed: () {
-              setState(() {
-                isFavorite = !isFavorite; // Toggle favorite state
-              });
-              debugPrint(
-                  'Favorite status: $isFavorite'); // Debug favorite state
-            },
+            onPressed: _updateFavoriteStatus, // Call update method on press
           ),
         ],
       ),

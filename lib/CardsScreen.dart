@@ -373,13 +373,16 @@ class _CardsScreenState extends State<CardsScreen> {
                       ),
                     ],
                   ),
-                  onTap: () {
-                    Navigator.of(context).push(
+                  onTap: () async {
+                    await Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => RecipeInformationScreen(
-                            card: card, dbHelper: widget.dbHelper),
+                          card: card,
+                          dbHelper: widget.dbHelper,
+                        ),
                       ),
                     );
+                    _refreshUI(); // Refresh UI after returning from RecipeInformationScreen
                   },
                 );
               },

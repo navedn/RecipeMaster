@@ -25,6 +25,7 @@ class DatabaseHelper {
   static const cardInstructions = 'instructions'; // Recipe instructions
   static const cardPrepTime = 'prep_time'; // Preparation time in minutes
   static const cardCookTime = 'cook_time'; // Cooking time in minutes
+  static const cardIsFavorite = 'is_fav'; // Is the recipe favorited or not?
 
   // GroceryList table
   static const groceryListTable = 'grocery_list';
@@ -74,6 +75,7 @@ class DatabaseHelper {
       $cardInstructions TEXT,   -- New column for recipe instructions
       $cardPrepTime INTEGER,    -- New column for preparation time
       $cardCookTime INTEGER,    -- New column for cooking time    
+      $cardIsFavorite INTEGER NOT NULL DEFAULT 0,
       FOREIGN KEY ($cardFolderId) REFERENCES $folderTable ($folderId)
     )
     ''');
@@ -142,6 +144,7 @@ class DatabaseHelper {
               "3. Transfer to a bowl and add toppings of choice.",
       DatabaseHelper.cardPrepTime: 5,
       DatabaseHelper.cardCookTime: 10,
+      DatabaseHelper.cardIsFavorite: 1,
     });
 
 // Breakfast Recipes
@@ -557,6 +560,20 @@ class DatabaseHelper {
       where: '$groceryItemId = ?',
       whereArgs: [itemId],
     );
+  }
+
+  // Bug fixed here for future reference, the name of the parameter and the column being changed should not be the same, both were cardID so I changed it to itemID.
+  Future<void> updateCardIsFavorite(int itemId, bool isFavorited) async {
+    debugPrint('Updating card $cardId favorite status to $isFavorited');
+    final db = _db;
+    int count = await db.update(
+      cardsTable,
+      {cardIsFavorite: isFavorited ? 1 : 0},
+      where: '$cardId = ?',
+      whereArgs: [itemId],
+    );
+
+    debugPrint('$count row(s) updated.');
   }
 
   Future<int> insertMealPlan({
