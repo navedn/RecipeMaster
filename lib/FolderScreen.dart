@@ -4,6 +4,7 @@ import 'database_helper.dart';
 import 'CardsScreen.dart';
 import 'shopping_list_screen.dart';
 import 'planner_screen.dart';
+import 'favorite_screen.dart';
 
 class FoldersScreen extends StatefulWidget {
   final DatabaseHelper dbHelper;
@@ -180,6 +181,20 @@ class _FoldersScreenState extends State<FoldersScreen> {
       appBar: AppBar(
         title: const Text('RecipeMaster'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite_sharp),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => FavoriteCardsScreen(
+                          folderID: 1,
+                          folderName: 'What',
+                          dbHelper: widget.dbHelper,
+                        )),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: _addFolder,

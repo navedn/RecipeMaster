@@ -303,12 +303,19 @@ class DatabaseHelper {
   }
 
   // Fetch cards in a folder
-  Future<List<Map<String, dynamic>>> getCardsInFolder(int folderId,
-      {String query = ''}) async {
+  Future<List<Map<String, dynamic>>> getCardsInFolder(int folderId) async {
     return await _db.query(
       cardsTable,
       where: '$cardFolderId = ?',
       whereArgs: [folderId],
+    );
+  }
+
+  // Fetch favorite cards
+  Future<List<Map<String, dynamic>>> getFavoriteCards(int folderId) async {
+    return await _db.query(
+      cardsTable,
+      where: '$cardIsFavorite = 1',
     );
   }
 
